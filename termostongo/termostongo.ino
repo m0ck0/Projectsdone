@@ -8,12 +8,13 @@ int reading = 0;
 int targetTemp =26;
 int sensorPin = A0;
 int relay =12;
-int EncoderA  = 3;
-int EncoderB  = 2;
-//int Encoder_Switch = 4;
+int EncoderA  = 2;
+int EncoderB  = 3;
+int EncoderSw = 4;
 int Previous_Output;
 int Count;
 int realTemp=20;
+int EncoderStat =0;
 
 byte lamparica [8] =
 {
@@ -72,8 +73,8 @@ void setup() {
   lcd.createChar(4,lamparicon);
   pinMode (EncoderA, INPUT);
   pinMode (EncoderB, INPUT);
-//  pinMode (Encoder_Switch, INPUT);
-  pinMode(relay,OUTPUT);
+  pinMode (EncoderSw, INPUT_PULLUP);
+  pinMode (relay,OUTPUT);
   Previous_Output = digitalRead(EncoderA);
 
 }
@@ -84,6 +85,7 @@ void loop() {
 //  reading = analogRead(sensorPin);
 //  int celsius = reading/2;
   targetTemp = EEPROM.read(1);
+  EncoderStat  = digitalRead(EncoderSw);
   
   lcd.setCursor(0, 0);
   lcd.write(1);
@@ -108,7 +110,7 @@ if (targetTemp > realTemp) {
   } else {
     digitalWrite(relay,LOW);
     lcd.write(3);
-  }
+    }
   lcd.setCursor(0, 1);
   lcd.write(2);
   lcd.setCursor(3, 1);
@@ -120,6 +122,13 @@ if (targetTemp > realTemp) {
   encoder();
   delay(5);
   lcd.clear();
+  if (EncoderStat == HIGH) {
+    digitalWrite(relay,LOW);
+    } else {
+    digitalWrite(relay,HIGH);
+    lcd.setCursor(14, 0);
+    lcd.write(4);
+    }
 }
 
 void encoder(){
