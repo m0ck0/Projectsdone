@@ -10,7 +10,7 @@ const long interval = 2000;
 #define data 3
 #define clk 4 
 #define boton 5
-int botone = 0;
+#define reset 14
 int State;
 int LastState;  
 float MaxTemp=0;
@@ -48,6 +48,8 @@ void setup() {
   pinMode (clk,INPUT);
   pinMode (data,INPUT);   
   pinMode (boton,INPUT);
+  pinMode (reset,INPUT);
+  digitalWrite (reset, HIGH);
   digitalWrite (boton, HIGH);
   LastState = digitalRead(clk);   
   MinTemp=EEPROM.read(2);
@@ -57,6 +59,12 @@ void setup() {
 }
  
 void loop() {
+  if (digitalRead(reset) == LOW){
+    EEPROM.write(2,RealTemp);
+    EEPROM.write(3,RealTemp);
+    EEPROM.write(4,RealHum);
+    EEPROM.write(5,RealHum);
+  }
   if (digitalRead(boton) == LOW){
     delay(500);
 
