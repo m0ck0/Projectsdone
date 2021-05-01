@@ -9,6 +9,8 @@ const long interval = 2000;
 #define relay 12
 #define data 3
 #define clk 4 
+#define boton 5
+int botone = 0;
 int State;
 int LastState;  
 float MaxTemp=0;
@@ -18,19 +20,17 @@ int MinHum=100;
 float RealTemp;
 float TargetTemp;
 int RealHum;
+int Display=0;
 float temp_hum_val[2] = {0};    
-int MinTempEE;
-int MaxTempEE;
-int MinHumEE;
-int MaxHumEE;
+
 
 byte lamparica [8] ={    B01110,    B10001,    B10001,    B10001,    B01010,    B01110,    B01110,    B00100};
 byte lamparicon [8] ={    B01110,    B11111,    B11111,    B11111,    B01110,    B01110,    B01010,    B00100};
 byte termometru[8] = {    B00100,    B01010,    B01010,    B01110,    B01110,    B11111,    B11111,    B01110};
 byte picagota[8] = {    B00100,    B00100,    B01010,    B01010,    B10001,    B10001,    B10001,    B01110,};
 byte sadface[8] = {    B00000,    B11011,    B11011,    B00010,    B00001,    B01110,    B10001,    B00000,};
-
-
+byte downarrow[8] = {  0b00000,  0b00000,  0b00000,  0b01110,  0b01110,  0b11111,  0b01110,  0b00100};
+byte uparrow[8] = {  0b00100,  0b01110,  0b11111,  0b01110,  0b01110,  0b00000,  0b00000,  0b00000};
 
 void setup() {
   EEPROM.read (1);
@@ -42,15 +42,146 @@ void setup() {
   lcd.createChar(3,lamparica);
   lcd.createChar(4,lamparicon);
   lcd.createChar(5,sadface);
-   pinMode (relay,OUTPUT);
-   pinMode (clk,INPUT);
-   pinMode (data,INPUT);   
-   LastState = digitalRead(clk);   
-
+  lcd.createChar(6,downarrow);
+  lcd.createChar(7,uparrow);
+  pinMode (relay,OUTPUT);
+  pinMode (clk,INPUT);
+  pinMode (data,INPUT);   
+  pinMode (boton,INPUT);
+  digitalWrite (boton, HIGH);
+  LastState = digitalRead(clk);   
+  MinTemp=EEPROM.read(2);
+  MaxTemp=EEPROM.read(3);
+  MinHum=EEPROM.read(4);
+  MaxHum=EEPROM.read(5); 
 }
  
 void loop() {
+  if (digitalRead(boton) == LOW){
+    delay(500);
+
+    Display=Display+1;
+    if (Display>2){
+      lcd.clear();
+      Display=1;
+    }
+    switch (Display) {
+      case 1: {mainpage();}
+      case 2: {logpage();}
+    }
+  }
   TargetTemp = EEPROM.read(1);
+  if (RealTemp==0) {error();}
+  mainpage();
+  relays();
+  
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+   previousMillis = currentMillis;
+  temphum();
+  MinMax();
+  }
+}
+
+void encoder(){
+   if (TargetTemp < 6) TargetTemp = 6;
+   if (TargetTemp > 40) TargetTemp = 40;  
+  State = digitalRead(clk);
+   if (State != LastState){     
+     if (digitalRead(data) != State) { 
+       TargetTemp ++;
+     } else {
+       TargetTemp --;
+     }
+   } 
+   LastState = State;
+      EEPROM.write (1,TargetTemp);
+}
+  
+void relays(){
+  if (TargetTemp > RealTemp) {
+    digitalWrite(relay,HIGH);
+    } else {
+    digitalWrite(relay,LOW);
+    }
+}
+
+void relayicon(){
+  if (TargetTemp > RealTemp) {
+    lcd.setCursor(15, 0);
+    lcd.write(4);
+    } else {
+    lcd.setCursor(15, 0);
+    lcd.write(3);
+    }
+}
+    
+void temphum(){
+  if(!dht.readTempAndHumidity(temp_hum_val)){
+  RealHum = temp_hum_val[0];
+  RealTemp = temp_hum_val[1];
+    }
+}
+
+void MinMax(){
+    if (RealTemp<MinTemp){
+      MinTemp=RealTemp;
+      EEPROM.write (2,MinTemp);
+    }
+    if (RealTemp>MaxTemp){
+      MaxTemp=RealTemp;
+      EEPROM.write (3,MaxTemp);
+    }
+    if (RealHum<MinHum){
+      MinHum=RealHum;
+      EEPROM.write (4,MinHum);
+    }
+    if (RealHum>MaxHum){
+      MaxHum=RealHum;
+      EEPROM.write (5,MaxHum);
+    }
+   }
+   
+void logpage(){
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.write(1);
+  lcd.write(6);
+ if (RealTemp<10){lcd.print(" ");}
+  lcd.print(EEPROM.read(2));
+  lcd.print((char)223); 
+  lcd.print("C  ");
+  lcd.write(7);
+ if (RealTemp<10){lcd.print(" ");}
+  lcd.print(EEPROM.read(3));
+  lcd.print((char)223); 
+  lcd.print("C");
+  lcd.setCursor(0, 1);
+  lcd.write(2);
+  lcd.write(6);
+if (RealHum<10){lcd.print(" ");}
+  lcd.print(EEPROM.read(4));
+  lcd.print("%   ");
+  lcd.write(7);
+if (RealHum<10){lcd.print(" ");}
+  lcd.print(EEPROM.read(5));
+  lcd.print("%");
+  delay(4000);
+  lcd.clear();
+}
+
+void error(){
+    lcd.clear();
+    lcd.setCursor(0, 0);   
+    lcd.print("No veo nada,  ");
+    lcd.write(5); 
+    lcd.setCursor(0, 1);   
+    lcd.print("y es mui triste");
+    delay(1000);
+    lcd.clear();
+}
+
+void mainpage(){
   lcd.setCursor(0, 0);
   lcd.write(1);
  if (RealTemp<10){lcd.print(" ");}
@@ -77,64 +208,5 @@ if (RealHum<10){lcd.print(" ");}
   lcd.print("%");
   lcd.setCursor(6, 1);
   encoder();
-  relays();
- unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval) {
-   previousMillis = currentMillis;
-  temphum();
-  MinMax();
-  }
-  }
-
-void encoder(){
-   if (TargetTemp < 6) TargetTemp = 6;
-   if (TargetTemp > 40) TargetTemp = 40;  
-  State = digitalRead(clk);
-   if (State != LastState){     
-     if (digitalRead(data) != State) { 
-       TargetTemp ++;
-     } else {
-       TargetTemp --;
-     }
-   } 
-   LastState = State;
-      EEPROM.write (1,TargetTemp);
+  relayicon();
 }
-  
-void relays(){
-  if (TargetTemp > RealTemp) {
-    digitalWrite(relay,HIGH);
-    lcd.setCursor(15, 0);
-    lcd.write(4);
-    } else {
-    digitalWrite(relay,LOW);
-    lcd.setCursor(15, 0);
-    lcd.write(3);
-    }
-}
-    
-void temphum(){
-  if(!dht.readTempAndHumidity(temp_hum_val)){
-  RealHum = temp_hum_val[0];
-  RealTemp = temp_hum_val[1];
-    }
-}
-
-void MinMax(){
-    if (RealHum<MinHum && RealHum!=100){
-      MinHum=RealHum;
-      EEPROM.write (2,MinHum);
-    }
-    if (RealHum>MaxHum && RealHum!=0){
-      MaxHum=RealHum;
-      EEPROM.write (3,MaxHum);
-    }
-    if (RealTemp<MinTemp && RealTemp!=100){
-      MinTemp=RealTemp;
-      EEPROM.write (4,MinTemp);
-    }
-    if (RealTemp>MaxTemp && RealTemp!=0){
-      MaxTemp=RealTemp;
-      EEPROM.write (5,MaxTemp);
-    }
-   }
