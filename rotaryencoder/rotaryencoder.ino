@@ -1,18 +1,18 @@
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(6,7,8,9,10,11);  
 
-#define encoder0PinA 2
-#define encoder0PinB 3
-#define encoder0Btn 4
+#define encoder0PinA 3
+#define encoder0PinB 4
+#define encoder0Btn 5
 int encoder0Pos = 0;
 unsigned long previousMillis = 0;
 const long interval = 150;
 
 void setup() {
   lcd.begin(16, 2);
-  pinMode(encoder0PinA, INPUT_PULLUP);
-  pinMode(encoder0PinB, INPUT_PULLUP);
-  pinMode(encoder0Btn, INPUT_PULLUP);
+  pinMode(encoder0PinA, INPUT);
+  pinMode(encoder0PinB, INPUT);
+  pinMode(encoder0Btn, INPUT);
   attachInterrupt(0, doEncoder, CHANGE);
 }
 int valRotary,lastValRotary;
@@ -33,7 +33,7 @@ unsigned long currentMillis = millis();
   lcd.print("  CCW");
   }
   lastValRotary = valRotary;
-  lcd.println(" ");
+  lcd.print(" ");
 }
 }
 void doEncoder()
