@@ -10,7 +10,7 @@ const long interval = 2000;
 #define data 3
 #define clk 4 
 #define boton 5
-//#define reset 13
+#define reset 19
 int State;
 int LastState;  
 int MaxTemp=0;
@@ -19,7 +19,6 @@ int MaxHum=0;
 int MinHum=100;
 float RealTemp;
 int TargetTemp;
-int TempInt;
 int RealHum;
 int Display=0;
 float temp_hum_val[2] = {0};    
@@ -35,7 +34,7 @@ byte uparrow[8] =    {  B00100,  B01110,  B11111,  B01110,  B01110,  B00000,  B0
 
 void setup() {
   EEPROM.read(1);
-ccc  Wire.begin();
+  Wire.begin();
   dht.begin();
   lcd.begin(16, 2);
   lcd.createChar(1,termometru);
@@ -49,8 +48,8 @@ ccc  Wire.begin();
   pinMode (clk,INPUT);
   pinMode (data,INPUT);   
   pinMode (boton,INPUT);
-//  pinMode (reset,INPUT);
-//  digitalWrite (reset, HIGH);
+  pinMode (reset,INPUT);
+  digitalWrite (reset, HIGH);
   digitalWrite (boton, HIGH);
   LastState = digitalRead(clk);   
   MinTemp=EEPROM.read(2);
@@ -61,17 +60,15 @@ ccc  Wire.begin();
    }
  
 void loop() {
-   TempInt=RealTemp;
-
-//  if (digitalRead(reset) == LOW){
-//    EEPROM.write(2,RealTemp);
-//    EEPROM.write(3,RealTemp);
-//    EEPROM.write(4,RealHum);
-//    EEPROM.write(5,RealHum);
-//  }
+  if (digitalRead(reset) == LOW){
+        delay(300);
+    EEPROM.write(2,RealTemp);
+    EEPROM.write(3,RealTemp);
+    EEPROM.write(4,RealHum);
+    EEPROM.write(5,RealHum);
+  }
   if (digitalRead(boton) == LOW){
     delay(500);
-
     Display=Display+1;
     if (Display>2){
       lcd.clear();
@@ -112,7 +109,7 @@ void encoder(){
    }
   
 void relays(){
-  if (TargetTemp > TempInt) {
+  if (TargetTemp > RealTemp) {
     digitalWrite(relay,HIGH);
     } else {
     digitalWrite(relay,LOW);
@@ -220,9 +217,5 @@ if (RealHum<10){lcd.print(" ");}
   lcd.setCursor(3, 1);
   lcd.setCursor(4, 1);
   lcd.print("%");
-  lcd.setCursor(9, 1);
-  lcd.print(EEPROM.read(6));
-  lcd.print((char)223); 
-  lcd.print("C");
   relayicon();
 }
