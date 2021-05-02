@@ -10,7 +10,7 @@ const long interval = 2000;
 #define data 3
 #define clk 4 
 #define boton 5
-#define reset 14
+//#define reset 13
 int State;
 int LastState;  
 float MaxTemp=0;
@@ -33,7 +33,6 @@ byte downarrow[8] = {  0b00000,  0b00000,  0b00000,  0b01110,  0b01110,  0b11111
 byte uparrow[8] = {  0b00100,  0b01110,  0b11111,  0b01110,  0b01110,  0b00000,  0b00000,  0b00000};
 
 void setup() {
-  EEPROM.read (1);
   Wire.begin();
   dht.begin();
   lcd.begin(16, 2);
@@ -49,22 +48,23 @@ void setup() {
   pinMode (data,INPUT);   
   pinMode (boton,INPUT);
   pinMode (reset,INPUT);
-  digitalWrite (reset, HIGH);
+//  digitalWrite (reset, HIGH);
   digitalWrite (boton, HIGH);
   LastState = digitalRead(clk);   
   MinTemp=EEPROM.read(2);
   MaxTemp=EEPROM.read(3);
   MinHum=EEPROM.read(4);
   MaxHum=EEPROM.read(5); 
+  TargetTemp=EEPROM.read(1);
 }
  
 void loop() {
-  if (digitalRead(reset) == LOW){
-    EEPROM.write(2,RealTemp);
-    EEPROM.write(3,RealTemp);
-    EEPROM.write(4,RealHum);
-    EEPROM.write(5,RealHum);
-  }
+//  if (digitalRead(reset) == LOW){
+//    EEPROM.write(2,RealTemp);
+//    EEPROM.write(3,RealTemp);
+//    EEPROM.write(4,RealHum);
+//    EEPROM.write(5,RealHum);
+//  }
   if (digitalRead(boton) == LOW){
     delay(500);
 
@@ -78,7 +78,6 @@ void loop() {
       case 2: {logpage();}
     }
   }
-  TargetTemp = EEPROM.read(1);
   if (RealTemp==0) {error();}
   mainpage();
   relays();
