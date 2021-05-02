@@ -19,7 +19,6 @@ int MaxHum=0;
 int MinHum=100;
 float RealTemp;
 int TargetTemp;
-int TTR;
 int RealHum;
 int Display=0;
 float temp_hum_val[2] = {0};    
@@ -110,12 +109,11 @@ void encoder(){
    }
   
 void relays(){
-    TTR=TargetTemp;
-    if (TargetTemp > RealTemp) {TTR ++;}
-    if (TTR > RealTemp){  
+
+    if (TargetTemp > RealTemp) {
     digitalWrite(relay,HIGH);
     } else {
-    digitalWrite(relay,LOW);
+         digitalWrite(relay,LOW);
     }
 }
 
@@ -221,6 +219,5 @@ if (RealHum<10){lcd.print(" ");}
   lcd.setCursor(4, 1);
   lcd.print("%");
   lcd.setCursor(8, 1);
-  lcd.print(TTR);
   relayicon();
 }
