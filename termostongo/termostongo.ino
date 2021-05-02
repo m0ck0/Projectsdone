@@ -13,27 +13,29 @@ const long interval = 2000;
 //#define reset 13
 int State;
 int LastState;  
-float MaxTemp=0;
-float MinTemp=100;
+int MaxTemp=0;
+int MinTemp=100;
 int MaxHum=0;
 int MinHum=100;
 float RealTemp;
-float TargetTemp;
+int TargetTemp;
+int TempInt;
 int RealHum;
 int Display=0;
 float temp_hum_val[2] = {0};    
 
 
-byte lamparica [8] ={    B01110,    B10001,    B10001,    B10001,    B01010,    B01110,    B01110,    B00100};
-byte lamparicon [8] ={    B01110,    B11111,    B11111,    B11111,    B01110,    B01110,    B01010,    B00100};
-byte termometru[8] = {    B00100,    B01010,    B01010,    B01110,    B01110,    B11111,    B11111,    B01110};
-byte picagota[8] = {    B00100,    B00100,    B01010,    B01010,    B10001,    B10001,    B10001,    B01110,};
-byte sadface[8] = {    B00000,    B11011,    B11011,    B00010,    B00001,    B01110,    B10001,    B00000,};
-byte downarrow[8] = {  0b00000,  0b00000,  0b00000,  0b01110,  0b01110,  0b11111,  0b01110,  0b00100};
-byte uparrow[8] = {  0b00100,  0b01110,  0b11111,  0b01110,  0b01110,  0b00000,  0b00000,  0b00000};
+byte lamparica [8] = {  B01110,  B10001,  B10001,  B10001,  B01010,  B01110,  B01110,  B00100};
+byte lamparicon [8] ={  B01110,  B11111,  B11111,  B11111,  B01110,  B01110,  B01010,  B00100};
+byte termometru[8] = {  B00100,  B01010,  B01010,  B01110,  B01110,  B11111,  B11111,  B01110};
+byte picagota[8] =   {  B00100,  B00100,  B01010,  B01010,  B10001,  B10001,  B10001,  B01110,};
+byte sadface[8] =    {  B00000,  B11011,  B11011,  B00010,  B00001,  B01110,  B10001,  B00000,};
+byte downarrow[8] =  {  B00000,  B00000,  B00000,  B01110,  B01110,  B11111,  B01110,  B00100};
+byte uparrow[8] =    {  B00100,  B01110,  B11111,  B01110,  B01110,  B00000,  B00000,  B00000};
 
 void setup() {
-  Wire.begin();
+  EEPROM.read(1);
+ccc  Wire.begin();
   dht.begin();
   lcd.begin(16, 2);
   lcd.createChar(1,termometru);
@@ -47,7 +49,7 @@ void setup() {
   pinMode (clk,INPUT);
   pinMode (data,INPUT);   
   pinMode (boton,INPUT);
-  pinMode (reset,INPUT);
+//  pinMode (reset,INPUT);
 //  digitalWrite (reset, HIGH);
   digitalWrite (boton, HIGH);
   LastState = digitalRead(clk);   
@@ -55,10 +57,12 @@ void setup() {
   MaxTemp=EEPROM.read(3);
   MinHum=EEPROM.read(4);
   MaxHum=EEPROM.read(5); 
-  TargetTemp=EEPROM.read(1);
-}
+  TargetTemp=EEPROM.read(6);
+   }
  
 void loop() {
+   TempInt=RealTemp;
+
 //  if (digitalRead(reset) == LOW){
 //    EEPROM.write(2,RealTemp);
 //    EEPROM.write(3,RealTemp);
@@ -79,6 +83,7 @@ void loop() {
     }
   }
   if (RealTemp==0) {error();}
+  encoder();
   mainpage();
   relays();
   
@@ -100,13 +105,14 @@ void encoder(){
      } else {
        TargetTemp --;
      }
-   } 
+   }
    LastState = State;
-      EEPROM.write (1,TargetTemp);
-}
+   EEPROM.write (6,TargetTemp);
+   
+   }
   
 void relays(){
-  if (TargetTemp > RealTemp) {
+  if (TargetTemp > TempInt) {
     digitalWrite(relay,HIGH);
     } else {
     digitalWrite(relay,LOW);
@@ -148,7 +154,7 @@ void MinMax(){
       EEPROM.write (5,MaxHum);
     }
    }
-   
+  
 void logpage(){
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -202,6 +208,7 @@ void mainpage(){
   lcd.setCursor(9, 0);
 if (TargetTemp<10){lcd.print(" ");}
   lcd.print(TargetTemp,1);  
+  lcd.print(".0");
   lcd.setCursor(13, 0);
   lcd.print((char)223); 
   lcd.print("C");
@@ -213,7 +220,9 @@ if (RealHum<10){lcd.print(" ");}
   lcd.setCursor(3, 1);
   lcd.setCursor(4, 1);
   lcd.print("%");
-  lcd.setCursor(6, 1);
-  encoder();
+  lcd.setCursor(9, 1);
+  lcd.print(EEPROM.read(6));
+  lcd.print((char)223); 
+  lcd.print("C");
   relayicon();
 }
