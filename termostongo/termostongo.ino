@@ -32,7 +32,6 @@ byte downarrow[8] =  {  B00000,  B00000,  B00000,  B01110,  B01110,  B11111,  B0
 byte uparrow[8] =    {  B00100,  B01110,  B11111,  B01110,  B01110,  B00000,  B00000,  B00000};
 
 void setup(){
-  EEPROM.read(1);
   Wire.begin();
   dht.begin();
   lcd.begin(16, 2);
@@ -61,10 +60,10 @@ void setup(){
 void loop(){
   if (digitalRead(reset) == LOW){
     delay(300);
-    EEPROM.write(2,RealTemp);
-    EEPROM.write(3,RealTemp);
-    EEPROM.write(4,RealHum);
-    EEPROM.write(5,RealHum);
+    EEPROM.update(2,RealTemp);
+    EEPROM.update(3,RealTemp);
+    EEPROM.update(4,RealHum);
+    EEPROM.update(5,RealHum);
   }
   if (digitalRead(boton) == LOW){
     delay(500);
@@ -103,7 +102,7 @@ void encoder(){
      }
    }
    LastState = State;
-   EEPROM.write (6,TargetTemp);   
+   EEPROM.update (6,TargetTemp);   
 }
   
 void relays(){
@@ -134,19 +133,19 @@ void temphum(){
 void MinMax(){
     if (RealTemp<MinTemp){
       MinTemp=RealTemp;
-      EEPROM.write (2,MinTemp);
+      EEPROM.update(2,MinTemp);
     }
     if (RealTemp>MaxTemp){
       MaxTemp=RealTemp;
-      EEPROM.write (3,MaxTemp);
+      EEPROM.update(3,MaxTemp);
     }
     if (RealHum<MinHum){
       MinHum=RealHum;
-      EEPROM.write (4,MinHum);
+      EEPROM.update(4,MinHum);
     }
     if (RealHum>MaxHum){
       MaxHum=RealHum;
-      EEPROM.write (5,MaxHum);
+      EEPROM.update(5,MaxHum);
   }
 }
   
