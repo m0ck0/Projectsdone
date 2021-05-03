@@ -108,13 +108,13 @@ void encoder(){
 }
   
 void relays(){
-	if (TTR > RealTemp && digitalRead(relay)==LOW)){
-	TTR ++;
+  TTR = TargetTemp+1; 
+	if (TargetTemp > RealTemp && (!digitalRead(relay))){
 	digitalWrite(relay,HIGH);
-	} else {
-	TTR=TargetTemp;
+	} else if (TTR < RealTemp){
 	digitalWrite(relay,LOW);
-}}
+  }
+}
     
 void temphum(){
   if(!dht.readTempAndHumidity(temp_hum_val)){
@@ -208,11 +208,12 @@ if (RealHum<10){lcd.print(" ");}
   lcd.setCursor(4, 1);
   lcd.print("%");
   lcd.setCursor(8, 1);
+  lcd.print(TTR);
   relayicon();
 }
 
 void relayicon(){
-  if (TargetTemp > RealTemp) {
+  if (TTR > RealTemp) {
     lcd.setCursor(15, 0);
     lcd.write(4);
     } else {
