@@ -19,7 +19,6 @@ int MaxHum=0;
 int MinHum=100;
 float RealTemp;
 int TargetTemp;
-int TTR;
 int RealHum;
 int Display=0;
 float temp_hum_val[2] = {0};    
@@ -56,7 +55,6 @@ void setup(){
   MinHum=EEPROM.read(4);
   MaxHum=EEPROM.read(5); 
   TargetTemp=EEPROM.read(6);
-  TTR=TargetTemp;
 }
  
 void loop(){
@@ -108,10 +106,9 @@ void encoder(){
 }
   
 void relays(){
-  TTR = TargetTemp+1; 
 	if (TargetTemp > RealTemp && (!digitalRead(relay))){
 	digitalWrite(relay,HIGH);
-	} else if (TTR < RealTemp){
+	} else if (TargetTemp+1 < RealTemp){
 	digitalWrite(relay,LOW);
   }
 }
@@ -208,12 +205,11 @@ if (RealHum<10){lcd.print(" ");}
   lcd.setCursor(4, 1);
   lcd.print("%");
   lcd.setCursor(8, 1);
-  lcd.print(TTR);
   relayicon();
 }
 
 void relayicon(){
-  if (TTR > RealTemp) {
+  if (digitalRead(relay)) {
     lcd.setCursor(15, 0);
     lcd.write(4);
     } else {
