@@ -19,14 +19,15 @@ int MaxHum=0;
 int MinHum=100;
 float RealTemp;
 int TargetTemp;
+int TTR;
 int RealHum;
 int Display=0;
 float temp_hum_val[2] = {0};    
 
-byte lamparica [8] = {  B01110,  B10001,  B10001,  B10001,  B01010,  B01110,  B01110,  B00100};
-byte lamparicon [8] ={  B01110,  B11111,  B11111,  B11111,  B01110,  B01110,  B01010,  B00100};
 byte termometru[8] = {  B00100,  B01010,  B01010,  B01110,  B01110,  B11111,  B11111,  B01110};
 byte picagota[8] =   {  B00100,  B00100,  B01010,  B01010,  B10001,  B10001,  B10001,  B01110};
+byte lamparica [8] = {  B01110,  B10001,  B10001,  B10001,  B01010,  B01110,  B01110,  B00100};
+byte lamparicon [8] ={  B01110,  B11111,  B11111,  B11111,  B01110,  B01110,  B01010,  B00100};
 byte sadface[8] =    {  B00000,  B11011,  B11011,  B00010,  B00001,  B01110,  B10001,  B00000};
 byte downarrow[8] =  {  B00000,  B00000,  B00000,  B01110,  B01110,  B11111,  B01110,  B00100};
 byte uparrow[8] =    {  B00100,  B01110,  B11111,  B01110,  B01110,  B00000,  B00000,  B00000};
@@ -55,6 +56,7 @@ void setup(){
   MinHum=EEPROM.read(4);
   MaxHum=EEPROM.read(5); 
   TargetTemp=EEPROM.read(6);
+  TTR=TargetTemp;
 }
  
 void loop(){
@@ -106,22 +108,13 @@ void encoder(){
 }
   
 void relays(){
-    if (TargetTemp > RealTemp) {
-    digitalWrite(relay,HIGH);
-    } else {
-         digitalWrite(relay,LOW);
-  }
-}
-
-void relayicon(){
-  if (TargetTemp > RealTemp) {
-    lcd.setCursor(15, 0);
-    lcd.write(4);
-    } else {
-    lcd.setCursor(15, 0);
-    lcd.write(3);
-  }
-}
+	if (TTR > RealTemp && digitalRead(relay)==LOW)){
+	TTR ++;
+	digitalWrite(relay,HIGH);
+	} else {
+	TTR=TargetTemp;
+	digitalWrite(relay,LOW);
+}}
     
 void temphum(){
   if(!dht.readTempAndHumidity(temp_hum_val)){
@@ -216,4 +209,14 @@ if (RealHum<10){lcd.print(" ");}
   lcd.print("%");
   lcd.setCursor(8, 1);
   relayicon();
+}
+
+void relayicon(){
+  if (TargetTemp > RealTemp) {
+    lcd.setCursor(15, 0);
+    lcd.write(4);
+    } else {
+    lcd.setCursor(15, 0);
+    lcd.write(3);
+  }
 }
