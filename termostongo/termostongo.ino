@@ -77,7 +77,6 @@ void loop(){
       case 2: {logpage();}
     }
   }
-  if (RealTemp==0) {error();}
   encoder();
   mainpage();
   relays();
@@ -117,7 +116,7 @@ void temphum(){
   if(!dht.readTempAndHumidity(temp_hum_val)){
   RealHum = temp_hum_val[0];
   RealTemp = temp_hum_val[1];
-  }
+  }else {error();}
 }
 
 void MinMax(){
