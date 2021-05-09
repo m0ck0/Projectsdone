@@ -105,7 +105,7 @@ void encoder(){
 }
   
 void relays(){
-	if (TargetTemp > RealTemp && (!digitalRead(relay))){
+	if (TargetTemp > RealTemp && RealTemp != 0 && (!digitalRead(relay))){
 	digitalWrite(relay,HIGH);
 	} else if (TargetTemp+1 < RealTemp){
 	digitalWrite(relay,LOW);
