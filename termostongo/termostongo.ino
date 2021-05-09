@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 #include <LiquidCrystal.h>
 #include "DHT.h"
-LiquidCrystal lcd(6,7,8,9,10,11);  
+LiquidCrystal lcd(6,7,11,8,9,10);  
 DHT dht(2, DHT22);
 
 unsigned long previousMillis = 0;
@@ -10,7 +10,7 @@ const long interval = 2000;
 #define data 3
 #define clk 4 
 #define boton 5
-#define reset 19
+#define reset 13
 int State;
 int LastState;  
 int MaxTemp=0;
@@ -120,7 +120,7 @@ void temphum(){
 }
 
 void MinMax(){
-    if (RealTemp<MinTemp){
+    if (RealTemp<MinTemp && RealTemp!=0){
       MinTemp=RealTemp;
       EEPROM.update(2,MinTemp);
     }
@@ -128,7 +128,7 @@ void MinMax(){
       MaxTemp=RealTemp;
       EEPROM.update(3,MaxTemp);
     }
-    if (RealHum<MinHum){
+    if (RealHum<MinHum && RealTemp!=0){
       MinHum=RealHum;
       EEPROM.update(4,MinHum);
     }
