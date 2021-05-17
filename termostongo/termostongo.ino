@@ -62,7 +62,7 @@ void setup() {
   MinHum = EEPROM.read(4);
   MaxHum = EEPROM.read(5);
   TargetTemp = EEPROM.read(6);
-  TimerHumi.setTimeout(60000); // 1 minuto
+  TimerHumi.setTimeout(60 * 1000); // 1 minuto
   TimerWait.setTimeout(4 * 60 * 60 * 1000); // horas
   TimerHumi.restart();
   digitalWrite(humidi, HIGH);
