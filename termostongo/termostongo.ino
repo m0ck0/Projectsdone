@@ -120,7 +120,7 @@ void encoder() {
 }
 
 void relays() {
-  if ((temp_hum_val[1] != 0) && TargetTemp >= RealTemp && (!digitalRead(relay))) {
+  if ((temp_hum_val[1] != 0) && (TargetTemp >= RealTemp) && (!digitalRead(relay))) {
     digitalWrite(relay, HIGH);
   } else if ((TargetTemp < RealTemp) && (digitalRead(relay))) {
     digitalWrite(relay, LOW);
