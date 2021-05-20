@@ -1,11 +1,8 @@
 #include <EEPROM.h>
 #include <LiquidCrystal.h>
-#include "DHT.h"
-#include <RBD_Timer.h>
+#include <DHT.h>
 LiquidCrystal lcd(6, 7, 11, 8, 9, 10);
 DHT dht(2, DHT22);
-RBD::Timer TimerWait;
-RBD::Timer TimerHumi;
 
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
