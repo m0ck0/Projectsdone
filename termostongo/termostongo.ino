@@ -8,13 +8,16 @@ RBD::Timer TimerWait;
 RBD::Timer TimerHumi;
 
 unsigned long previousMillis = 0;
+unsigned long prevMillis = 0;
+const unsigned long HumidiOn = 2 * 60 * 1000;
+const unsigned long HumidiWait = 60 * 60 * 1000UL;
 const long interval = 2000;
 #define relay 12
 #define data 3
 #define clk 4
 #define boton 5
-#define reset 13
-#define humidi 14
+#define reset 14
+#define humidi 13
 int State;
 int LastState;
 int MaxTemp = 0;
@@ -62,10 +65,6 @@ void setup() {
   MinHum = EEPROM.read(4);
   MaxHum = EEPROM.read(5);
   TargetTemp = EEPROM.read(6);
-  TimerHumi.setTimeout(60 * 1000); // 1 minuto
-  TimerWait.setTimeout(4 * 60 * 60 * 1000); // horas
-  TimerHumi.restart();
-  digitalWrite(humidi, HIGH);
 }
 
 void loop() {
@@ -121,24 +120,22 @@ void encoder() {
 }
 
 void relays() {
-  if (temp_hum_val[1] != 0 && TargetTemp > RealTemp && (!digitalRead(relay))) {
+  if ((temp_hum_val[1] != 0) && TargetTemp >= RealTemp && (!digitalRead(relay))) {
     digitalWrite(relay, HIGH);
-  } else if (TargetTemp + 1 < RealTemp) {
+  } else if ((TargetTemp < RealTemp) && (digitalRead(relay))) {
     digitalWrite(relay, LOW);
   }
 }
 
 void timerhumi() {
-  if (TimerWait.onExpired()) {
-    TimerHumi.restart();
+  unsigned long curMillis = millis();
+  if ((digitalRead(humidi)) && (curMillis - prevMillis >= HumidiOn)) {
+    prevMillis = curMillis;
+    digitalWrite(humidi, LOW);
+  }  else if ((!digitalRead(humidi)) && (curMillis - prevMillis >= HumidiWait)) {
+    prevMillis = curMillis;
     digitalWrite(humidi, HIGH);
   }
-
-  if (TimerHumi.onExpired()) {
-    TimerWait.restart();
-    digitalWrite(humidi, LOW);
-  }
-
 }
 
 void temphum() {
