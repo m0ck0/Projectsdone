@@ -12,12 +12,12 @@ unsigned long prevMillis = 0;
 const unsigned long HumidiOn = 2 * 60 * 1000UL;
 const unsigned long HumidiWait = 60 * 60 * 1000UL;
 const long interval = 2000;
+const int data 3
+const int clk 4
+const int boton 5
 const int relay 12
-const int  data 3
-const int  clk 4
-const int  boton 5
-const int  reset 14
-const int  humidi 13
+const int humidi 13
+const int reset 14
 int State;
 int LastState;
 int MaxTemp = 0;
@@ -37,7 +37,7 @@ byte lamparicon[8] = {  B01110,  B11111,  B11111,  B11111,  B01110,  B01110,  B0
 byte sadface[8] =    {  B00000,  B11011,  B11011,  B00010,  B00001,  B01110,  B10001,  B00000};
 byte downarrow[8] =  {  B00000,  B00000,  B00000,  B01110,  B01110,  B11111,  B01110,  B00100};
 byte uparrow[8] =    {  B00100,  B01110,  B11111,  B01110,  B01110,  B00000,  B00000,  B00000};
-byte gota[8] =       {  B00100,  B00100,  B01110,  B01110,  B11111,  B11111,  B11111,  B01110};
+byte gotallena[8] =       {  B00100,  B00100,  B01110,  B01110,  B11111,  B11111,  B11111,  B01110};
 
 void setup() {
   Wire.begin();
@@ -50,7 +50,7 @@ void setup() {
   lcd.createChar(5, sadface);
   lcd.createChar(6, downarrow);
   lcd.createChar(7, uparrow);
-  lcd.createChar(8, gota);
+  lcd.createChar(8, gotallena);
   pinMode (relay, OUTPUT);
   pinMode (humidi, OUTPUT);
   pinMode (clk, INPUT);
