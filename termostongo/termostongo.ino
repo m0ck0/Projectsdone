@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 #include <LiquidCrystal.h>
 #include "DHT.h"
-#include <RBD_Timer.h> // https://github.com/alextaujenis/RBD_Timer
+#include <RBD_Timer.h>
 LiquidCrystal lcd(6, 7, 11, 8, 9, 10);
 DHT dht(2, DHT22);
 RBD::Timer TimerWait;
@@ -12,23 +12,23 @@ unsigned long prevMillis = 0;
 const unsigned long HumidiOn = 2 * 60 * 1000;
 const unsigned long HumidiWait = 60 * 60 * 1000UL;
 const long interval = 2000;
-#define relay 12
-#define data 3
-#define clk 4
-#define boton 5
-#define reset 14
-#define humidi 13
+const int relay 12
+const int  data 3
+const int  clk 4
+const int  boton 5
+const int  reset 14
+const int  humidi 13
 int State;
 int LastState;
 int MaxTemp = 0;
 int MinTemp = 100;
 int MaxHum = 0;
 int MinHum = 100;
-float RealTemp;
 int TargetTemp;
 int RealHum;
 int Display = 0;
 float temp_hum_val[2] = {0};
+float RealTemp;
 
 byte termometru[8] = {  B00100,  B01010,  B01010,  B01110,  B01110,  B11111,  B11111,  B01110};
 byte picagota[8] =   {  B00100,  B00100,  B01010,  B01010,  B10001,  B10001,  B10001,  B01110};
