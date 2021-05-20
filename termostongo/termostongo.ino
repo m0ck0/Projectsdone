@@ -69,14 +69,14 @@ void setup() {
 
 void loop() {
   if (digitalRead(reset) == LOW) {
-    delay(300);
+    delay(400);
     EEPROM.update(2, RealTemp);
     EEPROM.update(3, RealTemp);
     EEPROM.update(4, RealHum);
     EEPROM.update(5, RealHum);
   }
   if (digitalRead(boton) == LOW) {
-    delay(500);
+    delay(400);
     Display = Display + 1;
     if (Display > 2) {
       lcd.clear();
