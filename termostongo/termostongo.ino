@@ -9,12 +9,12 @@ unsigned long prevMillis = 0;
 const unsigned long HumidiOn = 2 * 60 * 1000UL;
 const unsigned long HumidiWait = 60 * 60 * 1000UL;
 const long interval = 2000;
-const int data 3
-const int clk 4
-const int boton 5
-const int relay 12
-const int humidi 13
-const int reset 14
+const int data = 3;
+const int clk = 4;
+const int boton = 5;
+const int relay = 12;
+const int humidi = 13;
+const int reset = 14;
 int State;
 int LastState;
 int MaxTemp = 0;
