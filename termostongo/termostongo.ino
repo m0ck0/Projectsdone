@@ -6,8 +6,8 @@ DHT dht(2, DHT22);
 
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
-const unsigned long HumidiOn = 2 * 60 * 1000UL;
-const unsigned long HumidiWait = 60 * 60 * 1000UL;
+const unsigned long HumidiOn = 1 * 60 * 1000UL;
+const unsigned long HumidiWait = 15 * 60 * 1000UL;
 const long interval = 2000;
 const byte data = 3;
 const byte clk = 4;
@@ -20,7 +20,7 @@ byte MinTemp = 100;
 byte MaxHum = 0;
 byte MinHum = 100;
 byte Display = 0;
-bye TargetTemp;
+byte TargetTemp;
 int RealHum;
 int State;
 int LastState;
@@ -117,9 +117,9 @@ void encoder() {
 }
 
 void relays() {
-  if ((temp_hum_val[1] != 0) && (TargetTemp >= RealTemp) && (!digitalRead(relay))) {
+  if ((temp_hum_val[1] != 0) && (TargetTemp > RealTemp) && (!digitalRead(relay))) {
     digitalWrite(relay, HIGH);
-  } else if ((TargetTemp < RealTemp) && (digitalRead(relay))) {
+  } else if ((TargetTemp <= RealTemp) && (digitalRead(relay))) {
     digitalWrite(relay, LOW);
   }
 }
