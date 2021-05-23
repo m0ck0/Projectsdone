@@ -57,11 +57,11 @@ void setup() {
   digitalWrite (reset, HIGH);
   digitalWrite (boton, HIGH);
   LastState = digitalRead(clk);
+  TargetTemp = EEPROM.read(1);
   MinTemp = EEPROM.read(2);
   MaxTemp = EEPROM.read(3);
   MinHum = EEPROM.read(4);
   MaxHum = EEPROM.read(5);
-  TargetTemp = EEPROM.read(6);
 }
 
 void loop() {
@@ -113,7 +113,7 @@ void encoder() {
     }
   }
   LastState = State;
-  EEPROM.update (6, TargetTemp);
+  EEPROM.update (1, TargetTemp);
 }
 
 void calentador() {
