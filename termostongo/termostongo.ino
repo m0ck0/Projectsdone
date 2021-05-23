@@ -12,8 +12,8 @@ const long interval = 2000;
 const byte data = 3;
 const byte clk = 4;
 const byte boton = 5;
-const byte relay = 12;
-const byte humidi = 13;
+const byte Calentador = 12;
+const byte Humidi = 13;
 const byte reset = 14;
 byte MaxTemp = 0;
 byte MinTemp = 100;
@@ -48,8 +48,8 @@ void setup() {
   lcd.createChar(6, downarrow);
   lcd.createChar(7, uparrow);
   lcd.createChar(8, gotallena);
-  pinMode (relay, OUTPUT);
-  pinMode (humidi, OUTPUT);
+  pinMode (Calentador, OUTPUT);
+  pinMode (Humidi, OUTPUT);
   pinMode (clk, INPUT);
   pinMode (data, INPUT);
   pinMode (boton, INPUT);
@@ -91,7 +91,7 @@ void loop() {
   timerhumi();
   encoder();
   mainpage();
-  relays();
+  calentador();
 
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
@@ -116,22 +116,22 @@ void encoder() {
   EEPROM.update (6, TargetTemp);
 }
 
-void relays() {
-  if ((temp_hum_val[1] != 0) && (TargetTemp > RealTemp) && (!digitalRead(relay))) {
-    digitalWrite(relay, HIGH);
-  } else if ((TargetTemp <= RealTemp) && (digitalRead(relay))) {
-    digitalWrite(relay, LOW);
+void calentador() {
+  if ((temp_hum_val[1] != 0) && (TargetTemp > RealTemp) && (!digitalRead(Calentador))) {
+    digitalWrite(Calentador, HIGH);
+  } else if ((TargetTemp <= RealTemp) && (digitalRead(Calentador))) {
+    digitalWrite(Calentador, LOW);
   }
 }
 
 void timerhumi() {
   unsigned long curMillis = millis();
-  if ((digitalRead(humidi)) && (curMillis - prevMillis >= HumidiOn)) {
+  if ((digitalRead(Humidi)) && (curMillis - prevMillis >= HumidiOn)) {
     prevMillis = curMillis;
-    digitalWrite(humidi, LOW);
-  }  else if ((!digitalRead(humidi)) && (curMillis - prevMillis >= HumidiWait)) {
+    digitalWrite(Humidi, LOW);
+  }  else if ((!digitalRead(Humidi)) && (curMillis - prevMillis >= HumidiWait)) {
     prevMillis = curMillis;
-    digitalWrite(humidi, HIGH);
+    digitalWrite(Humidi, HIGH);
   }
 }
 
@@ -244,11 +244,11 @@ void mainpage() {
   lcd.setCursor(4, 1);
   lcd.print("%");
   lcd.setCursor(8, 1);
-  relayicon();
+  icons();
 }
 
-void relayicon() {
-  if (digitalRead(relay)) {
+void icons() {
+  if (digitalRead(Calentador)) {
     lcd.setCursor(15, 0);
     lcd.write(4);
   } else {
@@ -256,7 +256,7 @@ void relayicon() {
     lcd.write(3);
   }
 
-  if (digitalRead(humidi)) {
+  if (digitalRead(Humidi)) {
     lcd.setCursor(7, 1);
     lcd.write(8);
   } else {

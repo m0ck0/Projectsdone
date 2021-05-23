@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Robotins Temperatura & Humet estaiyon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+ <div style="background-image: url('bg.png');  background-repeat: no-repeat; background-position: center center; background-attachment: fixed;">   <p>
+	<div class="imgresize"><img src="termo.png"></div><span id="RealTemp">%RealTemp%</span>
+    <div class="imgresize2"><img src="grados.png"></div>
+  </p>
+  <p>
+	<div class="imgresize2"><img src="min.png"></div>
+    <span class="sensor-labelssmall" id="MinTemp">%MinT%</span>
+    <div class="imgresize3"><img src="grados.png"></div>
+	<div class="imgresize2"><img src="max.png"></div>
+    <span class="sensor-labelssmall" id="MaxTemp">%MaxT%</span>
+    <div class="imgresize3"><img src="grados.png"></div>
+  </p>
+   <p>
+    <div class="imgresize"><img src="termos.png"></div>
+    <span id="TargetTemp">%TargetTemp%</span>
+    <div class="imgresize2"><img src="grados.png"></div>
+  </p>
+ <p>
+    <a href="/menos"><img src="minus.png"></a>
+    <a href="/mas"><img src="plus.png"></a>
+  </p>
+  <p><div class="imgresize"><img src="heat.png"></div><strong> %Calentador%</strong></p>
+ <p>
+ </p>
+  <p><div class="imgresize"><img src="humi.png"></div><span id="RealHum">%RealHum%</span>
+    <div class="imgresize2"><img src="percen.png"></div>
+  </p>
+ <p>
+	<div class="imgresize2"><img src="min.png"></div>
+	<span class="sensor-labelssmall" id="MinHum">%MinH%</span>
+    <div class="imgresize3"><img src="percen.png"></div>
+    <div class="imgresize2"><img src="max.png"></div>
+    <span class="sensor-labelssmall" id="MaxHum">%MaxH%</span>
+    <div class="imgresize3"><img src="percen.png"></div>
+    </p>
+  <p>
+	<a href="/on"><img src="poweron.png"></a>
+    <a href="/off"><img src="poweroff.png"></a>
+  </p>
+	<p><div class="imgresize"><img src="hume.png"></div><strong> %Humidi%</strong></p>
+ </body>
+<script>
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("RealTemp").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetRealTemp", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("MinTemp").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetMinTemp", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("MaxTemp").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetMaxTemp", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("TargetTemp").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetTargetTemp", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("RealHum").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetRealHum", true);
+    xhttp.send();
+  }, 10000 ) ;
+  
+   setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("MinHum").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetMinHum", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("MaxHum").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetMaxHum", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+
+</script>
+</html>
