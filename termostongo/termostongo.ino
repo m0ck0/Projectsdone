@@ -118,17 +118,14 @@ void encoder() {
 }
 
 void calentador() {
-  if ((temp_hum_val[1] != 0) && (TargetTemp >= RealTemp)) {
-	  if (LastTemp < RealTemp) {
-    digitalWrite(Calentador, HIGH);
-  } else if ((LastTemp > RealTemp) && (TargetTemp - LastTemp) >=1 ){
+  if ((temp_hum_val[1] != 0) && (TargetTemp >= RealTemp) && (LastTemp < RealTemp)) {
+	digitalWrite(Calentador, HIGH);
+  } else if ((temp_hum_val[1] != 0) && ((TargetTemp - LastTemp) >=1 ) && (LastTemp > RealTemp)){
     digitalWrite(Calentador, HIGH);
   } else { 
   digitalWrite(Calentador, LOW);
 		}
-	} else {
-	 digitalWrite(Calentador, LOW);
-  }
+	} 
 }
 void timerhumi() {
   unsigned long curMillis = millis();
