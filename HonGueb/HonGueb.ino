@@ -152,14 +152,13 @@ void loop() {
       previousMillis = currentMillis;
       temphum();
       MinMax();
-      }
     }
   if (digitalRead(reset) == LOW) {
     delay(400);
-    EEPROM.update(2, RealTemp);
-    EEPROM.update(3, RealTemp);
-    EEPROM.update(4, RealHum);
-    EEPROM.update(5, RealHum);
+    EEPROM.write(2, RealTemp);
+    EEPROM.write(3, RealTemp);
+    EEPROM.write(4, RealHum);
+    EEPROM.write(5, RealHum);
   }
   if (digitalRead(boton) == LOW) {
     delay(400);
@@ -180,7 +179,7 @@ void loop() {
    mainpage();
    calentador();
    timerhumi();
-   }
+}
   
 void calentador() {
   if ((temp_hum_val[1] != 0) && (TargetTemp >= RealTemp) && (LastTemp < RealTemp)) {
@@ -190,8 +189,7 @@ void calentador() {
   } else { 
   digitalWrite(Calentador, LOW);
     }
-  } 
-}
+} 
 
 void timerhumi() {
   unsigned long curMillis = millis();
@@ -217,19 +215,19 @@ void temphum() {
 void MinMax() {
   if (RealTemp < MinTemp && RealTemp != 0) {
     MinTemp = RealTemp;
-    EEPROM.update(2, MinTemp);
+    EEPROM.write(2, MinTemp);
   }
   if (RealTemp > MaxTemp) {
     MaxTemp = RealTemp;
-    EEPROM.update(3, MaxTemp);
+    EEPROM.write(3, MaxTemp);
   }
   if (RealHum < MinHum && RealTemp != 0) {
     MinHum = RealHum;
-    EEPROM.update(4, MinHum);
+    EEPROM.write(4, MinHum);
   }
   if (RealHum > MaxHum) {
     MaxHum = RealHum;
-    EEPROM.update(5, MaxHum);
+    EEPROM.write(5, MaxHum);
   }
 }
 
