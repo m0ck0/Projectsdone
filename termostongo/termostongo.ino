@@ -21,6 +21,7 @@ byte MaxHum = 0;
 byte MinHum = 100;
 byte Display = 0;
 byte TargetTemp;
+int LastTemp;
 int RealHum;
 int State;
 int LastState;
@@ -117,13 +118,18 @@ void encoder() {
 }
 
 void calentador() {
-  if ((temp_hum_val[1] != 0) && (TargetTemp > RealTemp) && (!digitalRead(Calentador))) {
+  if ((temp_hum_val[1] != 0) && (TargetTemp >= RealTemp)) {
+	  if (LastTemp < RealTemp) {
     digitalWrite(Calentador, HIGH);
-  } else if ((TargetTemp <= RealTemp) && (digitalRead(Calentador))) {
-    digitalWrite(Calentador, LOW);
+  } else if ((LastTemp > RealTemp) && (TargetTemp - LastTemp) >=1 ){
+    digitalWrite(Calentador, HIGH);
+  } else { 
+  digitalWrite(Calentador, LOW);
+		}
+	} else {
+	 digitalWrite(Calentador, LOW);
   }
 }
-
 void timerhumi() {
   unsigned long curMillis = millis();
   if ((digitalRead(Humidi)) && (curMillis - prevMillis >= HumidiOn)) {
@@ -136,6 +142,7 @@ void timerhumi() {
 }
 
 void temphum() {
+	LastTemp = RealTemp;
   if (!dht.readTempAndHumidity(temp_hum_val)) {
     RealHum = temp_hum_val[0];
     RealTemp = temp_hum_val[1];
