@@ -82,27 +82,24 @@ void loop() {
   if (digitalRead(boton) == LOW) {
     delay(400);
     Display ++;
-    if (Display > 5) {
+    if (Display > 4) {
       lcd.clear();
       Display = 1;
     }
     switch (Display) {
       case 1: {
           mainpage();
+          encoderTemp();
         }
       case 2: {
           mainpage();
-          encoderTemp();
+          encoderHumOn();
         }
       case 3: {
           mainpage();
-          encoderHumOn();
-        }
-      case 4: {
-          mainpage();
           encoderHumOff();
         }
-      case 5: {
+      case 4: {
           logpage();
         }
     }
@@ -277,12 +274,9 @@ void mainpage() {
     lcd.print(" ");
   }
   lcd.print(temp_hum_val[1], 1);
-  lcd.setCursor(2, 0);
   lcd.setCursor(5, 0);
   lcd.print((char)223);
   lcd.print("C");
-  lcd.setCursor(8, 0);
-  lcd.write(3);
   lcd.setCursor(9, 0);
   if (TargetTemp < 10) {
     lcd.print(" ");
@@ -316,10 +310,10 @@ void mainpage() {
 
 void icons() {
   if (digitalRead(Calentador)) {
-    lcd.setCursor(15, 0);
+    lcd.setCursor(8, 0);
     lcd.write(4);
   } else {
-    lcd.setCursor(15, 0);
+    lcd.setCursor(8, 0);
     lcd.write(3);
   }
 
