@@ -79,7 +79,7 @@ void loop() {
     EEPROM.update(4, RealHum);
     EEPROM.update(5, RealHum);
   }
-  if (digitalRead(boton) == HIGH) {
+  if (digitalRead(boton) == LOW) {
     delay(400);
     Display ++;
     if (Display > 2) {
