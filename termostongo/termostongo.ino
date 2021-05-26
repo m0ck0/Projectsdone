@@ -82,7 +82,7 @@ void loop() {
   if (digitalRead(boton) == LOW) {
     delay(400);
     Display ++;
-    if (Display > 2) {
+    if (Display > 4) {
       lcd.clear();
       Display = 1;
     }
