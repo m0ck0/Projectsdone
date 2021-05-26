@@ -4,10 +4,11 @@
 LiquidCrystal lcd(6, 7, 11, 8, 9, 10);
 DHT dht(2, DHT22);
 
+const unsigned long Minutos = 60 * 1000UL;
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
-const unsigned long HumidiOn = 5 * 60 * 1000UL;
-const unsigned long HumidiWait = 15 * 60 * 1000UL;
+unsigned long HumidiOn; 
+unsigned long HumidiWait;
 const long interval = 2000;
 const byte data = 3;
 const byte clk = 4;
@@ -37,6 +38,7 @@ byte sadface[8] =    {  B00000,  B11011,  B11011,  B00010,  B00001,  B01110,  B1
 byte downarrow[8] =  {  B00000,  B00000,  B00000,  B01110,  B01110,  B11111,  B01110,  B00100};
 byte uparrow[8] =    {  B00100,  B01110,  B11111,  B01110,  B01110,  B00000,  B00000,  B00000};
 byte gotallena[8] =  {  B00100,  B00100,  B01110,  B01110,  B11111,  B11111,  B11111,  B01110};
+byte leftarrow[8] =	 {  B00000,  B00000,  B00100,  B01000,  B11111,  B01000,  B00100,  B00000};
 
 void setup() {
   Wire.begin();
@@ -50,6 +52,7 @@ void setup() {
   lcd.createChar(6, downarrow);
   lcd.createChar(7, uparrow);
   lcd.createChar(8, gotallena);
+  lcd.createChar(9, leftarrow);
   pinMode (Calentador, OUTPUT);
   pinMode (Humidi, OUTPUT);
   pinMode (clk, INPUT);
@@ -57,13 +60,15 @@ void setup() {
   pinMode (boton, INPUT);
   pinMode (reset, INPUT);
   digitalWrite (reset, HIGH);
-  digitalWrite (boton, HIGH);
+  //  digitalWrite (boton, HIGH);
   LastState = digitalRead(clk);
   TargetTemp = EEPROM.read(1);
   MinTemp = EEPROM.read(2);
   MaxTemp = EEPROM.read(3);
   MinHum = EEPROM.read(4);
   MaxHum = EEPROM.read(5);
+  HumidiOn = EEPROM.read(6);
+  HumidiWait = EEPROM.read(7);
 }
 
 void loop() {
@@ -74,9 +79,9 @@ void loop() {
     EEPROM.update(4, RealHum);
     EEPROM.update(5, RealHum);
   }
-  if (digitalRead(boton) == LOW) {
+  if (digitalRead(boton) == HIGH) {
     delay(400);
-    Display = Display + 1;
+    Display ++;
     if (Display > 2) {
       lcd.clear();
       Display = 1;
@@ -84,14 +89,22 @@ void loop() {
     switch (Display) {
       case 1: {
           mainpage();
+          encoderTemp();
         }
       case 2: {
+          mainpage();
+          encoderHumOn();
+        }
+      case 3: {
+          mainpage();
+          encoderHumOff();
+        }
+      case 4: {
           logpage();
         }
     }
   }
   timerhumi();
-  encoder();
   mainpage();
   calentador();
 
@@ -103,7 +116,7 @@ void loop() {
   }
 }
 
-void encoder() {
+void encoderTemp() {
   if (TargetTemp < 6 ) TargetTemp = 6;
   if (TargetTemp > 40) TargetTemp = 40;
   State = digitalRead(clk);
@@ -116,38 +129,73 @@ void encoder() {
   }
   LastState = State;
   EEPROM.update (1, TargetTemp);
+  lcd.setCursor(15, 0);
+  lcd.write(9);
+  delay(100);
+}
+
+void encoderHumOn() {
+  State = digitalRead(clk);
+  if (State != LastState) {
+    if (digitalRead(data) != State) {
+      HumidiOn ++;
+    } else {
+      HumidiOn --;
+    }
+  }
+  LastState = State;
+  EEPROM.update (6, HumidiOn);
+  lcd.setCursor(10, 1);
+  lcd.write(9);
+  delay(100);
+}
+
+void encoderHumOff() {
+  State = digitalRead(clk);
+  if (State != LastState) {
+    if (digitalRead(data) != State) {
+      HumidiWait ++;
+    } else {
+      HumidiWait --;
+    }
+  }
+  LastState = State;
+  EEPROM.update (7, HumidiWait);
+  lcd.setCursor(15, 1);
+  lcd.write(9);
+  delay(100);
 }
 
 void calentador() {
   if ((temp_hum_val[1] != 0) && (TargetTemp >= RealTemp) && (LastTemp < RealTemp)) {
-	digitalWrite(Calentador, HIGH);
-  } else if ((temp_hum_val[1] != 0) && ((TargetTemp - LastTemp) >=1 ) && (LastTemp > RealTemp)){
     digitalWrite(Calentador, HIGH);
-  } else { 
-  digitalWrite(Calentador, LOW);
-		}
-	} 
+  } else if ((temp_hum_val[1] != 0) && ((TargetTemp - LastTemp) >= 1 ) && (LastTemp > RealTemp)) {
+    digitalWrite(Calentador, HIGH);
+  } else {
+    digitalWrite(Calentador, LOW);
+  }
 }
+
 void timerhumi() {
   unsigned long curMillis = millis();
-  if ((digitalRead(Humidi)) && (curMillis - prevMillis >= HumidiOn)) {
+  if ((digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiOn*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Humidi, LOW);
-  }  else if ((!digitalRead(Humidi)) && (curMillis - prevMillis >= HumidiWait)) {
+  }  else if ((!digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiWait*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Humidi, HIGH);
   }
 }
 
 void temphum() {
-	if (RealTemp != IntTemp){
-		LastTemp = IntTemp;
-		IntTemp = RealTemp;
-	}
+  if (RealTemp != IntTemp) {
+    LastTemp = IntTemp;
+    IntTemp = RealTemp;
+  }
   if (!dht.readTempAndHumidity(temp_hum_val)) {
     RealHum = temp_hum_val[0];
     RealTemp = temp_hum_val[1];
-	} else {
+  } else {
     error();
   }
 }
@@ -203,8 +251,7 @@ void logpage() {
   }
   lcd.print(EEPROM.read(5));
   lcd.print("%");
-  delay(4000);
-  lcd.clear();
+  delay(200);
 }
 
 void error() {
@@ -219,6 +266,7 @@ void error() {
 }
 
 void mainpage() {
+  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.write(1);
   if (RealTemp < 10) {
@@ -235,22 +283,30 @@ void mainpage() {
   if (TargetTemp < 10) {
     lcd.print(" ");
   }
-  lcd.print(TargetTemp, 1);
+  lcd.print(TargetTemp);
   lcd.print(".0");
   lcd.setCursor(13, 0);
   lcd.print((char)223);
   lcd.print("C");
-  lcd.setCursor(0, 1);
-  lcd.write(2);
+  lcd.setCursor(2, 1);
   if (RealHum < 10) {
     lcd.print(" ");
   }
-  lcd.setCursor(2, 1);
   lcd.print(RealHum);
-  lcd.setCursor(3, 1);
   lcd.setCursor(4, 1);
   lcd.print("%");
-  lcd.setCursor(8, 1);
+  lcd.setCursor(7, 1);
+  lcd.write(8);
+  if (HumidiOn < 10) {
+    lcd.print(" ");
+  }
+  lcd.print(HumidiOn);
+  lcd.setCursor(12, 1);
+  lcd.write(2);
+  if (HumidiWait < 10) {
+    lcd.print(" ");
+  }
+  lcd.print(HumidiWait);
   icons();
 }
 
@@ -264,10 +320,10 @@ void icons() {
   }
 
   if (digitalRead(Humidi)) {
-    lcd.setCursor(7, 1);
+    lcd.setCursor(0, 1);
     lcd.write(8);
   } else {
-    lcd.setCursor(7, 1);
+    lcd.setCursor(0, 1);
     lcd.write(2);
   }
 }
