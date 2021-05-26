@@ -251,7 +251,8 @@ void logpage() {
   }
   lcd.print(EEPROM.read(5));
   lcd.print("%");
-  delay(200);
+  delay(4000);
+  Display = 1;
 }
 
 void error() {
