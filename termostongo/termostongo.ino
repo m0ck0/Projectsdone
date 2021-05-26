@@ -15,19 +15,19 @@ const byte boton = 5;
 const byte Calentador = 12;
 const byte Humidi = 13;
 const byte reset = 14;
-byte MaxTemp = 0;
-byte MinTemp = 100;
-byte MaxHum = 0;
-byte MinHum = 100;
+byte MaxTemp;
+byte MinTemp;
+byte MaxHum;
+byte MinHum;
 byte Display = 0;
 byte TargetTemp;
-byte IntTemp
+byte IntTemp;
 byte LastTemp;
+byte RealTemp;
 int RealHum;
 int State;
 int LastState;
 float temp_hum_val[2] = {0};
-float RealTemp;
 
 byte termometru[8] = {  B00100,  B01010,  B01010,  B01110,  B01110,  B11111,  B11111,  B01110};
 byte picagota[8] =   {  B00100,  B00100,  B01010,  B01010,  B10001,  B10001,  B10001,  B01110};
@@ -147,7 +147,7 @@ void temphum() {
   if (!dht.readTempAndHumidity(temp_hum_val)) {
     RealHum = temp_hum_val[0];
     RealTemp = temp_hum_val[1];
-  } else {
+	} else {
     error();
   }
 }
@@ -225,7 +225,6 @@ void mainpage() {
     lcd.print(" ");
   }
   lcd.print(temp_hum_val[1], 1);
-  //  lcd.print(RealTemp,1);
   lcd.setCursor(2, 0);
   lcd.setCursor(5, 0);
   lcd.print((char)223);
