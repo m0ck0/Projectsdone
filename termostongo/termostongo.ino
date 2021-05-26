@@ -82,24 +82,27 @@ void loop() {
   if (digitalRead(boton) == LOW) {
     delay(400);
     Display ++;
-    if (Display > 4) {
+    if (Display > 5) {
       lcd.clear();
       Display = 1;
     }
     switch (Display) {
       case 1: {
           mainpage();
-          encoderTemp();
         }
       case 2: {
           mainpage();
-          encoderHumOn();
+          encoderTemp();
         }
       case 3: {
           mainpage();
-          encoderHumOff();
+          encoderHumOn();
         }
       case 4: {
+          mainpage();
+          encoderHumOff();
+        }
+      case 5: {
           logpage();
         }
     }
