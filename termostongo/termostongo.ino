@@ -6,7 +6,7 @@ DHT dht(2, DHT22);
 
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
-const unsigned long HumidiOn = 1 * 60 * 1000UL;
+const unsigned long HumidiOn = 5 * 60 * 1000UL;
 const unsigned long HumidiWait = 15 * 60 * 1000UL;
 const long interval = 2000;
 const byte data = 3;
@@ -21,7 +21,8 @@ byte MaxHum = 0;
 byte MinHum = 100;
 byte Display = 0;
 byte TargetTemp;
-int LastTemp;
+byte IntTemp
+byte LastTemp;
 int RealHum;
 int State;
 int LastState;
@@ -139,7 +140,10 @@ void timerhumi() {
 }
 
 void temphum() {
-	LastTemp = RealTemp;
+	if (RealTemp != IntTemp){
+		LastTemp = IntTemp;
+		IntTemp = RealTemp;
+	}
   if (!dht.readTempAndHumidity(temp_hum_val)) {
     RealHum = temp_hum_val[0];
     RealTemp = temp_hum_val[1];
