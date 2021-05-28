@@ -7,46 +7,67 @@
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
- <div style="background-image: url('bg.png');  background-repeat: no-repeat; background-position: center center; background-attachment: fixed;">   <p>
-	<div class="imgresize"><img src="termo.png"></div><span id="RealTemp">%RealTemp%</span>
-    <div class="imgresize2"><img src="grados.png"></div>
-  </p>
-  <p>
-	<div class="imgresize2"><img src="min.png"></div>
+ <div style="background-image: url('bg');  background-repeat: no-repeat; background-position: center center; background-attachment: fixed;">
+ <p>
+	<div class="imgresize"><img src="termo"></div><span id="RealTemp">%RealTemp%</span>
+    <div class="imgresize2"><img src="grados"></div>
+</p>
+<p>
+	<div class="imgresize2"><img src="min"></div>
     <span class="sensor-labelssmall" id="MinTemp">%MinT%</span>
-    <div class="imgresize3"><img src="grados.png"></div>
-	<div class="imgresize2"><img src="max.png"></div>
+    <div class="imgresize3"><img src="grados"></div>
+	<div class="imgresize2"><img src="max"></div>
     <span class="sensor-labelssmall" id="MaxTemp">%MaxT%</span>
-    <div class="imgresize3"><img src="grados.png"></div>
-  </p>
-   <p>
-    <div class="imgresize"><img src="termos.png"></div>
+    <div class="imgresize3"><img src="grados"></div>
+</p>
+<p>
+    <div class="imgresize"><img src="termos"></div>
     <span id="TargetTemp">%TargetTemp%</span>
-    <div class="imgresize2"><img src="grados.png"></div>
-  </p>
- <p>
-    <a href="/menos"><img src="minus.png"></a>
-    <a href="/mas"><img src="plus.png"></a>
-  </p>
-  <p><div class="imgresize"><img src="heat.png"></div><strong> %Calentador%</strong></p>
- <p>
- </p>
-  <p><div class="imgresize"><img src="humi.png"></div><span id="RealHum">%RealHum%</span>
-    <div class="imgresize2"><img src="percen.png"></div>
-  </p>
- <p>
-	<div class="imgresize2"><img src="min.png"></div>
+    <div class="imgresize2"><img src="grados"></div>
+</p>
+<p>
+    <a href="/menos"><img src="minus"></a>
+    <a href="/mas"><img src="plus"></a>
+</p>
+  <p><div class="imgresize"><img src="heat"></div><strong> %Calentador%</strong></p>
+<p>
+</p>
+<p>
+	<div class="imgresize"><img src="humi"></div><span id="RealHum">%RealHum%</span>
+    <div class="imgresize2"><img src="percen"></div>
+</p>
+<p>
+	<div class="imgresize2"><img src="min"></div>
 	<span class="sensor-labelssmall" id="MinHum">%MinH%</span>
-    <div class="imgresize3"><img src="percen.png"></div>
-    <div class="imgresize2"><img src="max.png"></div>
+    <div class="imgresize3"><img src="percen"></div>
+    <div class="imgresize2"><img src="max"></div>
     <span class="sensor-labelssmall" id="MaxHum">%MaxH%</span>
-    <div class="imgresize3"><img src="percen.png"></div>
-    </p>
-  <p>
-	<a href="/on"><img src="poweron.png"></a>
-    <a href="/off"><img src="poweroff.png"></a>
-  </p>
-	<p><div class="imgresize"><img src="hume.png"></div><strong> %Humidi%</strong></p>
+    <div class="imgresize3"><img src="percen"></div>
+</p>
+<p>
+	<a href="/on"><img src="poweron"></a>
+    <a href="/off"><img src="poweroff"></a>
+</p>
+	<p><div class="imgresize"><img src="hume"></div><strong> %Humidi%</strong></p>
+<p>
+	<span class="sensor-labels">On</span>
+    <span class="sensor-labels">Wait</span>
+</p>
+<p>
+	<span class="sensor-labelssmall" id="HumidiOn">%HumO%</span>
+    <span class="sensor-labelssmall" id="HumidiWait">%HumW%</span>
+</p>
+<p>
+
+ 	<a href="/menoshumon"><div class="imgresize2"><img src="minus"></div></a>	
+    <a href="/mashumon"><div class="imgresize2"><img src="plus"></div></a>
+    <a href="/menoshumw"><div class="imgresize2"><img src="minus"></div></a>
+    <a href="/mashumw"><div class="imgresize2"><img src="plus"></div></a>
+	
+</p>
+<p>
+	<a href="/reset">resetear valores</a>
+</p>
  </body>
 <script>
   setInterval(function ( ) {
@@ -123,6 +144,26 @@
       }
     };
     xhttp.open("GET", "/GetMaxHum", true);
+    xhttp.send();
+  }, 10000 ) ;
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("HumidiOn").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetHumidiOn", true);
+    xhttp.send();
+  }, 10000 ) ;
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("HumidiWait").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetHumidiWait", true);
     xhttp.send();
   }, 10000 ) ;
 
