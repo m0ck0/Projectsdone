@@ -19,10 +19,10 @@ byte AirWait = 5;
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
 const long interval = 2000;
-const byte Calentador = 12;
-const byte Humidi = 4;
-const byte Aire = 5;
-const byte AireW = 12;
+const byte Calentador = D5;
+const byte Humidi = D2;
+const byte Aire = D1;
+const byte AireW = D6;
 String CalentadorStatus = "nose";
 String HumidiStatus = "patata";
 byte MaxTemp = 0;
@@ -274,32 +274,32 @@ void calentador() {
 
 void timerhumi() {
   unsigned long curMillis = millis();
-  if ((digitalRead(Aire)) && (!digitalRead(Humidi)) && (curMillis - prevMillis >= (AirOn*Minutos))) {
+  if ((digitalRead(Aire)) && (!digitalRead(Humidi)) && (!digitalRead(AireW)) && (curMillis - prevMillis >= (AirOn*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Aire, LOW);
     digitalWrite(AireW, HIGH);
     HumidiStatus = "WaitAir";
-    Serial.println("WaitAit");
-  }  else if ((digitalRead(AireW)) && (curMillis - prevMillis >= (AirWait*Minutos))) {
+    Serial.println("WaitAir");
+  }  else if ((digitalRead(AireW)) && (!digitalRead(Aire)) && (!digitalRead(Humidi)) && (curMillis - prevMillis >= (AirWait*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Humidi, HIGH);
     digitalWrite(Aire, HIGH);
+    digitalWrite(AireW, LOW);
 	HumidiStatus = "Humiding";
     Serial.println("Humiding");
-  }  else if ((digitalRead(Aire)) && (digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiOn*Minutos))) {
+  }  else if ((digitalRead(Aire)) && (digitalRead(Humidi)) && (!digitalRead(AireW)) && (curMillis - prevMillis >= (HumidiOn*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Humidi, LOW);
     digitalWrite(Aire, LOW);
+    digitalWrite(AireW, LOW);
 	HumidiStatus = "Waiting";
     Serial.println("Waiting");
-  }  else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiWait*Minutos))) {
+  }  else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (!digitalRead(AireW)) && (curMillis - prevMillis >= (HumidiWait*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Aire, HIGH);
     HumidiStatus = "Airing";
     Serial.println("Airing");
-  }else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (!digitalRead(AireW))) {
-    HumidiStatus = "Off";
-  }
+  } 
 }
 
 
