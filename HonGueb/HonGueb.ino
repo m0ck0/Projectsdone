@@ -5,24 +5,27 @@
 #include <Wire.h>
 #include <DHT.h>
 #include <EEPROM.h>
-#include <LiquidCrystal_I2C.h>
+//#include <LiquidCrystal_I2C.h>
 
 DHT dht (D5, DHT22);
-LiquidCrystal_I2C lcd(0x27, 20, 4);
+//LiquidCrystal_I2C lcd(0x27, 20, 4);
 
-const char* ssid = "androed";
-const char* password = "asdfghjk";
+const char* ssid = "Nichoo";
+const char* password = "milanesas";
 
 const unsigned long Minutos = 60 * 1000UL;
-byte HumidiOn = 4; 
-byte HumidiWait = 10;
+byte HumidiOn = 3; 
+byte HumidiWait = 15;
+byte AirOn = 2; 
+byte AirWait = 5;
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
 const long interval = 2000;
 const byte boton = 5;
 const byte Calentador = 12;
 const byte Humidi = 13;
-const byte reset = 14;
+const byte Aire = 14;
+const byte AireW = 15;
 byte MaxTemp = 0;
 byte MinTemp = 100;
 byte MaxHum = 0;
@@ -34,6 +37,7 @@ int RealHum;
 float temp_hum_val[2] = {0};
 float RealTemp;
 
+/*
 byte termometru[8] = {  B00100,  B01010,  B01010,  B01110,  B01110,  B11111,  B11111,  B01110};
 byte picagota[8] =   {  B00100,  B00100,  B01010,  B01010,  B10001,  B10001,  B10001,  B01110};
 byte lamparica [8] = {  B01110,  B10001,  B10001,  B10001,  B01010,  B01110,  B01110,  B00100};
@@ -42,7 +46,7 @@ byte sadface[8] =    {  B00000,  B11011,  B11011,  B00010,  B00001,  B01110,  B1
 byte downarrow[8] =  {  B00000,  B00000,  B00000,  B01110,  B01110,  B11111,  B01110,  B00100};
 byte uparrow[8] =    {  B00100,  B01110,  B11111,  B01110,  B01110,  B00000,  B00000,  B00000};
 byte gotallena[8] =  {  B00100,  B00100,  B01110,  B01110,  B11111,  B11111,  B11111,  B01110};
-
+*/
 AsyncWebServer server(80);
 
 String processor(const String& var) {
@@ -81,6 +85,12 @@ String processor(const String& var) {
   else if (var == "HumW") {
     return String(HumidiWait);
   }
+  else if (var == "AirO") {
+    return String(AirOn);
+  }
+  else if (var == "AirW") {
+    return String(AirWait);
+  }
   return String();
 
 }
@@ -91,6 +101,7 @@ void setup() {
   Wire.begin();
   EEPROM.begin(512);
   dht.begin();
+  /*
   lcd.init();
   lcd.backlight();
   lcd.createChar(1, termometru);
@@ -101,10 +112,12 @@ void setup() {
   lcd.createChar(6, downarrow);
   lcd.createChar(7, uparrow);
   lcd.createChar(8, gotallena);
+  */
   pinMode (Calentador, OUTPUT);
   pinMode (Humidi, OUTPUT);
+  pinMode (Aire, OUTPUT);
+  pinMode (AireW, OUTPUT);
   pinMode (boton, INPUT);
-  pinMode (reset, INPUT);
   TargetTemp = EEPROM.read(1);
   MinTemp = EEPROM.read(2);
   MaxTemp = EEPROM.read(3);
@@ -112,6 +125,8 @@ void setup() {
   MaxHum = EEPROM.read(5);
   HumidiOn = EEPROM.read(6);
   HumidiWait = EEPROM.read(7);
+  AirOn = EEPROM.read(8);
+  AirWait = EEPROM.read(9);
 
   if (!SPIFFS.begin()) {
     Serial.println("An Error has occurred while mounting SPIFFS");
@@ -176,6 +191,30 @@ void setup() {
     EEPROM.commit();
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
+  server.on("/menosairon", HTTP_GET, [](AsyncWebServerRequest * request) {
+    AirOn --;
+    EEPROM.write(8, AirOn);
+    EEPROM.commit();
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  server.on("/masairon", HTTP_GET, [](AsyncWebServerRequest * request) {
+    AirOn ++;
+    EEPROM.write(8, AirOn);
+  EEPROM.commit();
+  request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  server.on("/menosairw", HTTP_GET, [](AsyncWebServerRequest * request) {
+    AirWait --;
+    EEPROM.write(9, AirWait);
+    EEPROM.commit();
+  request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  server.on("/masairw", HTTP_GET, [](AsyncWebServerRequest * request) {
+    AirWait ++;
+    EEPROM.write(9, AirWait);
+    EEPROM.commit();
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
   server.on("/reset", HTTP_GET, [](AsyncWebServerRequest * request) {
         EEPROM.write(2, RealTemp);
         EEPROM.write(3, RealTemp);
@@ -183,6 +222,8 @@ void setup() {
         EEPROM.write(5, RealHum);
         EEPROM.write(6, HumidiOn);
         EEPROM.write(7, HumidiWait);
+        EEPROM.write(8, AirOn);
+        EEPROM.write(9, AirWait);
         EEPROM.commit();
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
@@ -213,6 +254,13 @@ void setup() {
   server.on("/GetHumidiWaiT", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send_P(200, "text/plain", String(HumidiWait).c_str());
   });
+  server.on("/GetAirOn", HTTP_GET, [](AsyncWebServerRequest * request) {
+    request->send_P(200, "text/plain", String(AirOn).c_str());
+  });
+  server.on("/GetAirWaiT", HTTP_GET, [](AsyncWebServerRequest * request) {
+    request->send_P(200, "text/plain", String(AirWait).c_str());
+  });
+/*
   server.on("/bg", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/bg.png", "image/png");
   });
@@ -255,7 +303,7 @@ void setup() {
   server.on("/termos", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/termos.png", "image/png");
   });
-
+*/
   server.begin();
 }
 
@@ -311,14 +359,24 @@ void calentador() {
 
 void timerhumi() {
   unsigned long curMillis = millis();
-  if ((digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiOn*Minutos))) {
+  if ((digitalRead(Aire)) && (!digitalRead(Humidi)) && (curMillis - prevMillis >= (AirOn*Minutos))) {
     prevMillis = curMillis;
-    digitalWrite(Humidi, LOW);
-  }  else if ((!digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiWait*Minutos))) {
+    digitalWrite(Aire, LOW);
+    digitalWrite(AireW, HIGH);
+  }  else if ((digitalRead(AireW)) && (curMillis - prevMillis >= (AirWait*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Humidi, HIGH);
+    digitalWrite(Aire, HIGH);
+  }  else if ((digitalRead(Aire)) && (digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiOn*Minutos))) {
+    prevMillis = curMillis;
+    digitalWrite(Humidi, LOW);
+    digitalWrite(Aire, LOW);
+  }  else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiWait*Minutos))) {
+    prevMillis = curMillis;
+    digitalWrite(Aire, HIGH);
   }
 }
+
 
 void temphum() {
   LastTemp = RealTemp;
