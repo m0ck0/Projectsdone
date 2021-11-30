@@ -6,7 +6,7 @@
 #include <DHT.h>
 #include <EEPROM.h>
 
-DHT dht (D5, DHT22);
+DHT dht (D7, DHT22);
 
 const char* ssid = "Nichoo";
 const char* password = "milanesas";
@@ -20,9 +20,9 @@ unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
 const long interval = 2000;
 const byte Calentador = 12;
-const byte Humidi = 13;
+const byte Humidi = 4;
 const byte Aire = 5;
-const byte AireW = 4;
+const byte AireW = 12;
 String CalentadorStatus = "nose";
 String HumidiStatus = "patata";
 byte MaxTemp = 0;
