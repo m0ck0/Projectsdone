@@ -23,8 +23,8 @@ const byte Calentador = 12;
 const byte Humidi = 13;
 const byte Aire = 5;
 const byte AireW = 4;
-String CalentadorStatus;
-String HumidiStatus ="patata";
+String CalentadorStatus = "nose";
+String HumidiStatus = "patata";
 byte MaxTemp = 0;
 byte MinTemp = 100;
 byte MaxHum = 0;
@@ -38,10 +38,10 @@ float RealTemp;
 AsyncWebServer server(80);
 
 String processor(const String& var) {
-  if (var == "CalentadorS") {
+  if (var == "CalentadorStatus") {
    return String(CalentadorStatus);
   }
-  else if (var == "HumidiSs") {
+  else if (var == "HumidiStatus") {
    return String(HumidiStatus);
   }
   else if (var == "RealTemp") {
@@ -135,11 +135,13 @@ void setup() {
   server.on("/on", HTTP_GET, [](AsyncWebServerRequest * request) {
     digitalWrite(Humidi, HIGH);
     digitalWrite(Aire, HIGH);
+    HumidiStatus = "On";
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
   server.on("/off", HTTP_GET, [](AsyncWebServerRequest * request) {
     digitalWrite(Humidi, LOW);
     digitalWrite(Aire, LOW);
+    HumidiStatus = "Off";
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
   server.on("/menoshumon", HTTP_GET, [](AsyncWebServerRequest * request) {
@@ -196,6 +198,11 @@ void setup() {
         EEPROM.write(4, RealHum);
         EEPROM.write(5, RealHum);
         EEPROM.commit();
+        MinTemp = RealTemp;
+        MaxTemp = RealTemp;
+        MinHum = RealHum;
+        MaxHum = RealHum;
+        Serial.println("Reset");
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
   server.on("/GetRealTemp", HTTP_GET, [](AsyncWebServerRequest * request) {
@@ -255,7 +262,7 @@ void loop() {
 void calentador() {
   if ((temp_hum_val[1] != 0) && (TargetTemp >= RealTemp) && (LastTemp < RealTemp)) {
     digitalWrite(Calentador, HIGH);
-  CalentadorStatus = "On";
+    CalentadorStatus = "On";
   } else if ((temp_hum_val[1] != 0) && ((TargetTemp - LastTemp) >= 1 ) && (LastTemp > RealTemp)) {
     digitalWrite(Calentador, HIGH);
 	CalentadorStatus = "On";
@@ -271,22 +278,28 @@ void timerhumi() {
     prevMillis = curMillis;
     digitalWrite(Aire, LOW);
     digitalWrite(AireW, HIGH);
-    HumidiStatus = "Off";
+    HumidiStatus = "WaitAir";
+    Serial.println("WaitAit");
   }  else if ((digitalRead(AireW)) && (curMillis - prevMillis >= (AirWait*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Humidi, HIGH);
     digitalWrite(Aire, HIGH);
-	HumidiStatus = "On";
+	HumidiStatus = "Humiding";
+    Serial.println("Humiding");
   }  else if ((digitalRead(Aire)) && (digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiOn*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Humidi, LOW);
     digitalWrite(Aire, LOW);
-	HumidiStatus = "Off";
+	HumidiStatus = "Waiting";
+    Serial.println("Waiting");
   }  else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiWait*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Aire, HIGH);
+    HumidiStatus = "Airing";
+    Serial.println("Airing");
+  }else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (!digitalRead(AireW))) {
     HumidiStatus = "Off";
-    }
+  }
 }
 
 

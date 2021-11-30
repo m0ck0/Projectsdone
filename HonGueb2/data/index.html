@@ -30,7 +30,7 @@
     <a href="/menos"><img src="http://yoursalsa.uy/data/minus.png"></a>
     <a href="/mas"><img src="http://yoursalsa.uy/data/plus.png"></a>
 </p>
-  <p><div class="imgresize"><img src="http://yoursalsa.uy/data/heat.png"></div><strong> %CalentadorS%</strong></p>
+  <p><div class="imgresize"><img src="http://yoursalsa.uy/data/heat.png"></div><strong> %CalentadorStatus%</strong></p>
 <p>
 </p>
 <p>
@@ -49,7 +49,7 @@
 	<a href="/on"><img src="http://yoursalsa.uy/data/poweron.png"></a>
     <a href="/off"><img src="http://yoursalsa.uy/data/poweroff.png"></a>
 </p>
-	<p><div class="imgresize"><img src="http://yoursalsa.uy/data/hume.png"></div><strong> %HumidiSs%</strong></p><p>
+	<p><div class="imgresize"><img src="http://yoursalsa.uy/data/hume.png"></div><strong> %HumidiStatus%</strong></p><p>
 	<span class="sensor-labels">On</span>
     <span class="sensor-labels">Wait</span>
 </p>
@@ -211,7 +211,7 @@
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
-        document.getElementById("CalentadorS").innerHTML = this.responseText;
+        document.getElementById("CalentadorStatus").innerHTML = this.responseText;
       }
     };
     xhttp.open("GET", "/GetCalentador", true);
@@ -222,10 +222,10 @@
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
-        document.getElementById("HumidiSs").innerHTML = this.responseText;
+        document.getElementById("HumidiStatus").innerHTML = this.responseText;
       }
     };
-    xhttp.open("GET", "/GetHuimdi", true);
+    xhttp.open("GET", "/GetHumidi", true);
     xhttp.send();
   }, 10000 ) ;
 
