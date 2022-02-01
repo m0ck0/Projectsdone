@@ -12,7 +12,7 @@
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
-DHT dht (D5, DHT11);
+DHT dht (3, DHT11);
 
 const char* ssid = "Nichoo";
 const char* password = "milanesas";
@@ -26,8 +26,8 @@ unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
 const long interval = 2000;
 const byte Calentador = 12;
-const byte Humidi = 13;
-const byte Aire = 5;
+const byte Humidi = 5;
+const byte Aire = 6;
 byte AireW = 0;
 String CalentadorStatus = "nose";
 String HumidiStatus = "patata";
@@ -36,7 +36,6 @@ byte MinTemp = 100;
 byte MaxHum = 0;
 byte MinHum = 100;
 byte TargetTemp = 22;
-byte LastTemp;
 int RealHum;
 float temp_hum_val[2] = {0};
 float RealTemp;
@@ -266,15 +265,20 @@ void loop() {
 }
 
 void calentador() {
-  if ((RealTemp >= 0) && (TargetTemp >= RealTemp) && (LastTemp < RealTemp)) {
+  if (RealTemp<0 && (digitalRead(Calentador))){
+  digitalWrite(Calentador, LOW);
+  CalentadorStatus = "Off";
+  Serial.println("CalentOff (no data)");
+    } 
+  else if (TargetTemp >= RealTemp && (!digitalRead(Calentador)) && RealTemp>0) {
     digitalWrite(Calentador, HIGH);
     CalentadorStatus = "On";
-  } else if ((RealTemp >= 0) && ((TargetTemp - LastTemp) >= 1 ) && (LastTemp > RealTemp)) {
-    digitalWrite(Calentador, HIGH);
-	CalentadorStatus = "On";
-	} else {
-    digitalWrite(Calentador, LOW);
+    Serial.println("CalentOn");
+  }
+ else if (TargetTemp < RealTemp && (digitalRead(Calentador)) && RealTemp>0) {
+  digitalWrite(Calentador, LOW);
 	CalentadorStatus = "Off";
+  Serial.println("CalentOff");
 	}
 }
 
@@ -311,10 +315,9 @@ void timerhumi() {
 
 
 void temphum() {
-  LastTemp = RealTemp;
-  sensors.requestTemperatures(); // Send the command to get temperatures
+  sensors.requestTemperatures(); 
   RealTemp = sensors.getTempCByIndex(0);
-//  Serial.println(RealTemp);
+  Serial.println(RealTemp);
   if (!dht.readTempAndHumidity(temp_hum_val)) {
     RealHum = temp_hum_val[0];
  //   RealTemp = temp_hum_val[1];
@@ -322,22 +325,22 @@ void temphum() {
 }
 
 void MinMax() {
-  if (RealTemp < MinTemp && RealTemp != 0) {
+  if ((RealTemp < MinTemp) && (RealTemp>=1)) {
     MinTemp = RealTemp;
     EEPROM.write(2, MinTemp);
     EEPROM.commit();
   }
-  else if (RealTemp > MaxTemp) {
+  else if ((RealTemp > MaxTemp) && (RealTemp<=100)) {
     MaxTemp = RealTemp;
     EEPROM.write(3, MaxTemp);
     EEPROM.commit();
   }
-  else if (RealHum < MinHum && RealTemp != 0) {
+  else if (RealHum < MinHum && RealHum > 0) {
     MinHum = RealHum;
     EEPROM.write(4, MinHum);
     EEPROM.commit();
   }
-  else if (RealHum > MaxHum) {
+  else if (RealHum > MaxHum && RealHum < 100) {
     MaxHum = RealHum;
     EEPROM.write(5, MaxHum);
     EEPROM.commit();
