@@ -28,7 +28,7 @@ const long interval = 2000;
 const byte Calentador = 12;
 const byte Humidi = 13;
 const byte Aire = 5;
-const byte AireW = 4;
+byte AireW = 0;
 String CalentadorStatus = "nose";
 String HumidiStatus = "patata";
 byte MaxTemp = 0;
@@ -97,7 +97,6 @@ void setup() {
   pinMode (Calentador, OUTPUT);
   pinMode (Humidi, OUTPUT);
   pinMode (Aire, OUTPUT);
-  pinMode (AireW, OUTPUT);
   TargetTemp = EEPROM.read(1);
   MinTemp = EEPROM.read(2);
   MaxTemp = EEPROM.read(3);
@@ -281,31 +280,32 @@ void calentador() {
 
 void timerhumi() {
   unsigned long curMillis = millis();
-  if ((digitalRead(Aire)) && (!digitalRead(Humidi)) && (curMillis - prevMillis >= (AirOn*Minutos))) {
+  if ((digitalRead(Aire)) && (!digitalRead(Humidi)) && (AireW==0) && (curMillis - prevMillis >= (AirOn*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Aire, LOW);
-    digitalWrite(AireW, HIGH);
+    AireW = 1;
     HumidiStatus = "WaitAir";
-    Serial.println("WaitAit");
-  }  else if ((digitalRead(AireW)) && (curMillis - prevMillis >= (AirWait*Minutos))) {
+    Serial.println("WaitAir");
+  }  else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (AireW==1) && (curMillis - prevMillis >= (AirWait*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Humidi, HIGH);
     digitalWrite(Aire, HIGH);
+    AireW = 0;
 	HumidiStatus = "Humiding";
     Serial.println("Humiding");
-  }  else if ((digitalRead(Aire)) && (digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiOn*Minutos))) {
+  }  else if ((digitalRead(Aire)) && (digitalRead(Humidi)) && (AireW==0) && (curMillis - prevMillis >= (HumidiOn*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Humidi, LOW);
     digitalWrite(Aire, LOW);
+    AireW = 0;
 	HumidiStatus = "Waiting";
     Serial.println("Waiting");
-  }  else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (curMillis - prevMillis >= (HumidiWait*Minutos))) {
+  }  else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (AireW==0) && (curMillis - prevMillis >= (HumidiWait*Minutos))) {
     prevMillis = curMillis;
     digitalWrite(Aire, HIGH);
     HumidiStatus = "Airing";
+    AireW = 0;
     Serial.println("Airing");
-  }else if ((!digitalRead(Aire)) && (!digitalRead(Humidi)) && (!digitalRead(AireW))) {
-    HumidiStatus = "Off";
   }
 }
 
@@ -313,8 +313,8 @@ void timerhumi() {
 void temphum() {
   LastTemp = RealTemp;
   sensors.requestTemperatures(); // Send the command to get temperatures
-    RealTemp = sensors.getTempCByIndex(0);
-  Serial.println(RealTemp);
+  RealTemp = sensors.getTempCByIndex(0);
+//  Serial.println(RealTemp);
   if (!dht.readTempAndHumidity(temp_hum_val)) {
     RealHum = temp_hum_val[0];
  //   RealTemp = temp_hum_val[1];
