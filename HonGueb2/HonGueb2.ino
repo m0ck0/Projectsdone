@@ -266,10 +266,10 @@ void loop() {
 }
 
 void calentador() {
-  if ((temp_hum_val[1] != 0) && (TargetTemp >= RealTemp) && (LastTemp < RealTemp)) {
+  if ((RealTemp >= 0) && (TargetTemp >= RealTemp) && (LastTemp < RealTemp)) {
     digitalWrite(Calentador, HIGH);
     CalentadorStatus = "On";
-  } else if ((temp_hum_val[1] != 0) && ((TargetTemp - LastTemp) >= 1 ) && (LastTemp > RealTemp)) {
+  } else if ((RealTemp >= 0) && ((TargetTemp - LastTemp) >= 1 ) && (LastTemp > RealTemp)) {
     digitalWrite(Calentador, HIGH);
 	CalentadorStatus = "On";
 	} else {
