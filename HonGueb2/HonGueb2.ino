@@ -12,7 +12,7 @@
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
-DHT dht (3, DHT11);
+DHT dht (14, DHT11);
 
 const char* ssid = "Nichoo";
 const char* password = "milanesas";
@@ -25,9 +25,9 @@ byte AirWait = 5;
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
 const long interval = 2000;
-const byte Calentador = 12;
-const byte Humidi = 5;
-const byte Aire = 6;
+const byte Calentador = 13;
+const byte Humidi = 16;
+const byte Aire = 5;
 byte AireW = 0;
 String CalentadorStatus = "nose";
 String HumidiStatus = "patata";
