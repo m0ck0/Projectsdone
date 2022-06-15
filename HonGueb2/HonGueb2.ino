@@ -5,21 +5,10 @@
 #include <Wire.h>
 #include <DHT.h>
 #include <EEPROM.h>
-#include <DNSServer.h>
-
-//#include <OneWire.h>
-//#include <DallasTemperature.h>
-//#include <ESP8266WebServer.h>
-//#include <WiFiManager.h>       
-//#define ONE_WIRE_BUS 4
-//OneWire oneWire(ONE_WIRE_BUS);
-//DallasTemperature sensors(&oneWire);
+#include <ESPAsyncWiFiManager.h>         
+DNSServer dns;
 
 DHT dht (D6, DHT22);
-
-const char* ssid = "Nichoo";
-const char* password = "milanesas";
-
 const unsigned long Minutos = 60 * 1000UL;
 byte HumidiOn = 3; 
 byte HumidiWait = 15;
@@ -28,9 +17,10 @@ byte AirWait = 5;
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
 const long interval = 6000;
-const byte Calentador = 13;
-const byte Humidi = 16;
-const byte Aire = 5;
+const byte Calentador = D1;
+const byte Humidi = D2;
+const byte Aire = D5;
+const byte Reset = D7;
 byte AireW = 0;
 String CalentadorStatus = "nose";
 String HumidiStatus = "patata";
@@ -97,6 +87,7 @@ void setup() {
   pinMode (Calentador, OUTPUT);
   pinMode (Humidi, OUTPUT);
   pinMode (Aire, OUTPUT);
+  pinMode (Reset, INPUT);
   TargetTemp = EEPROM.read(1);
   MinTemp = EEPROM.read(2);
   MaxTemp = EEPROM.read(3);
@@ -106,12 +97,18 @@ void setup() {
   HumidiWait = EEPROM.read(7);
   AirOn = EEPROM.read(8);
   AirWait = EEPROM.read(9);
-  if (!SPIFFS.begin()) {
+ if (!SPIFFS.begin()) {
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
+  Serial.println(WiFi.localIP());
+  AsyncWiFiManager wifiManager(&server,&dns);
+  wifiManager.autoConnect();
+    //reset saved settings
+    //wifiManager.resetSettings();
 
-  WiFi.begin(ssid, password);
+/* 
+WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.println("Connecting to WiFi..");
@@ -119,12 +116,7 @@ void setup() {
   Serial.println(WiFi.localIP());
   WiFi.setAutoReconnect(true);
   WiFi.persistent(true);
- 
-//  sensors.begin();
-//  Wire.begin();
-//  WiFiManager wifiManager; 
-//  wifiManager.autoConnect("AutoConnectAP");
-//  Serial.print("Connected.");
+*/
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/index.html", String(), false, processor);
@@ -269,7 +261,12 @@ void loop() {
   }
   calentador();
   timerhumi();
+  if (digitalRead(Reset) == LOW) {
+    Serial.println("resetando waifae");
+    AsyncWiFiManager wifiManager(&server,&dns);
+    wifiManager.setTimeout(120);
 }
+ }
 
 void calentador() {
   if (RealTemp<0 && (digitalRead(Calentador))){
