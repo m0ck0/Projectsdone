@@ -1,11 +1,11 @@
 #include <ESP8266WiFi.h>
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <ESPAsyncWiFiManager.h>         
 #include <FS.h>
 #include <Wire.h>
 #include <DHT.h>
 #include <EEPROM.h>
-#include <ESPAsyncWiFiManager.h>         
 DNSServer dns;
 
 DHT dht (D6, DHT22);
@@ -80,7 +80,7 @@ String processor(const String& var) {
 }
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT); 
+//  pinMode(LED_BUILTIN, OUTPUT); 
   Serial.begin(115200);
   EEPROM.begin(512);
   dht.begin();
@@ -106,17 +106,6 @@ void setup() {
   wifiManager.autoConnect();
     //reset saved settings
     //wifiManager.resetSettings();
-
-/* 
-WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi..");
-  }
-  Serial.println(WiFi.localIP());
-  WiFi.setAutoReconnect(true);
-  WiFi.persistent(true);
-*/
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/index.html", String(), false, processor);
