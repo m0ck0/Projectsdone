@@ -5,14 +5,17 @@
 #include <Wire.h>
 #include <DHT.h>
 #include <EEPROM.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
+#include <DNSServer.h>
 
-#define ONE_WIRE_BUS 4
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire);
+//#include <OneWire.h>
+//#include <DallasTemperature.h>
+//#include <ESP8266WebServer.h>
+//#include <WiFiManager.h>       
+//#define ONE_WIRE_BUS 4
+//OneWire oneWire(ONE_WIRE_BUS);
+//DallasTemperature sensors(&oneWire);
 
-DHT dht (14, DHT11);
+DHT dht (D6, DHT22);
 
 const char* ssid = "Nichoo";
 const char* password = "milanesas";
@@ -24,7 +27,7 @@ byte AirOn = 2;
 byte AirWait = 5;
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
-const long interval = 2000;
+const long interval = 6000;
 const byte Calentador = 13;
 const byte Humidi = 16;
 const byte Aire = 5;
@@ -89,10 +92,8 @@ String processor(const String& var) {
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT); 
   Serial.begin(115200);
-  Wire.begin();
   EEPROM.begin(512);
   dht.begin();
-  sensors.begin();
   pinMode (Calentador, OUTPUT);
   pinMode (Humidi, OUTPUT);
   pinMode (Aire, OUTPUT);
@@ -105,11 +106,11 @@ void setup() {
   HumidiWait = EEPROM.read(7);
   AirOn = EEPROM.read(8);
   AirWait = EEPROM.read(9);
-
   if (!SPIFFS.begin()) {
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
+
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
@@ -118,6 +119,12 @@ void setup() {
   Serial.println(WiFi.localIP());
   WiFi.setAutoReconnect(true);
   WiFi.persistent(true);
+ 
+//  sensors.begin();
+//  Wire.begin();
+//  WiFiManager wifiManager; 
+//  wifiManager.autoConnect("AutoConnectAP");
+//  Serial.print("Connected.");
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/index.html", String(), false, processor);
@@ -315,12 +322,12 @@ void timerhumi() {
 
 
 void temphum() {
-  sensors.requestTemperatures(); 
-  RealTemp = sensors.getTempCByIndex(0);
-  Serial.println(RealTemp);
   if (!dht.readTempAndHumidity(temp_hum_val)) {
     RealHum = temp_hum_val[0];
- //   RealTemp = temp_hum_val[1];
+    RealTemp = temp_hum_val[1];
+  Serial.print(RealTemp);
+  Serial.print("   ");
+  Serial.println(RealHum);
   }
 }
 
