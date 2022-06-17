@@ -80,14 +80,13 @@ String processor(const String& var) {
 }
 
 void setup() {
-//  pinMode(LED_BUILTIN, OUTPUT); 
   Serial.begin(115200);
   EEPROM.begin(512);
   dht.begin();
   pinMode (Calentador, OUTPUT);
   pinMode (Humidi, OUTPUT);
   pinMode (Aire, OUTPUT);
-  pinMode (Reset, INPUT);
+  pinMode (Reset, INPUT_PULLUP);
   TargetTemp = EEPROM.read(1);
   MinTemp = EEPROM.read(2);
   MaxTemp = EEPROM.read(3);
@@ -101,11 +100,9 @@ void setup() {
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
-  Serial.println(WiFi.localIP());
   AsyncWiFiManager wifiManager(&server,&dns);
-  wifiManager.autoConnect();
-    //reset saved settings
-    //wifiManager.resetSettings();
+     wifiManager.autoConnect();
+  Serial.println(WiFi.localIP());
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, "/index.html", String(), false, processor);
@@ -253,10 +250,19 @@ void loop() {
   if (digitalRead(Reset) == LOW) {
     Serial.println("resetando waifae");
     AsyncWiFiManager wifiManager(&server,&dns);
-    wifiManager.setTimeout(120);
+    wifiManager.resetSettings();
+    delay(300);
+      if (!wifiManager.startConfigPortal("OnDemandAP")) {
+      Serial.println("failed to connect and hit timeout");
+      delay(3000);
+      ESP.reset();
+      delay(5000);
+    }
+   Serial.println("connected...yeey :)");
+   Serial.println(WiFi.localIP());
+   ESP.reset();
+  }
 }
- }
-
 void calentador() {
   if (RealTemp<0 && (digitalRead(Calentador))){
   digitalWrite(Calentador, LOW);
