@@ -7,6 +7,7 @@ const int SHUTTLE1 = 4;
 const int SHUTTLE2 = 5;
 const int SHUTTLE3 = 6;
 const int SHUTTLE4 = 7;
+const byte LED = 13;
 byte shuttleValue = 0; 
 byte prevShuttleValue = 0;
 byte output = 0b10000000;
@@ -35,7 +36,7 @@ void setup(){
   pinMode(SHUTTLE4, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(3), shaft_moved, FALLING);
   pinMode(2,INPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED, OUTPUT);
 }
 
 void loop(){
@@ -59,7 +60,7 @@ void loop(){
     lastButtonState = buttonState;
     if (buttonState == LOW) {
       ledState = (ledState == HIGH) ? LOW: HIGH;
-      digitalWrite(LED_BUILTIN, ledState);
+      digitalWrite(LED, ledState);
     }}  
 }
 
