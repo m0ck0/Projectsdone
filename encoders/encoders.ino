@@ -11,8 +11,8 @@ byte shuttleValue = 0;
 byte prevShuttleValue = 0;
 byte output = 0b10000000;
 int valores = 0;
-int jogValue = 0;
-int prevJogValue = 0;
+int jogValue = 68;
+int prevJogValue = 67;
 unsigned long last_run=0;
 byte customKey = 12;
 byte hexaKeys[ROWS][COLS] = {
@@ -22,6 +22,9 @@ byte hexaKeys[ROWS][COLS] = {
 byte rowPins[ROWS] = {14, 15, 16};
 byte colPins[COLS] = {8, 9, 10, 11}; 
 Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
+byte ledState = LOW;
+byte lastButtonState = LOW;
+byte buttonState ;
 
 void setup(){
   MIDI.begin();
@@ -32,14 +35,18 @@ void setup(){
   pinMode(SHUTTLE4, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(3), shaft_moved, FALLING);
   pinMode(2,INPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop(){
+  buttonState = LOW;
   byte shuttleValue = output;
   bool shuttleChange = (shuttleValue != prevShuttleValue);
   prevShuttleValue = shuttleValue;
   bool jogChange = (jogValue != prevJogValue);
   prevJogValue = jogValue;
+  if (jogValue>127){jogValue=127;}
+  if (jogValue<0){jogValue=0;}
   bitWrite(output, 0 , !digitalRead(SHUTTLE4));
   bitWrite(output, 1 , !digitalRead(SHUTTLE3));
   bitWrite(output, 2 , !digitalRead(SHUTTLE2));
@@ -47,13 +54,15 @@ void loop(){
   customKey = customKeypad.getKey();
   if (customKey){midikey();}
   if (shuttleChange){shuttleCode();}
+  if (jogChange){MIDI.sendControlChange(111,(jogValue),1);}
+  if (buttonState != lastButtonState) {
+    lastButtonState = buttonState;
+    if (buttonState == LOW) {
+      ledState = (ledState == HIGH) ? LOW: HIGH;
+      digitalWrite(LED_BUILTIN, ledState);
+    }}  
 }
-/*  if (shuttleChange | jogChange){
-    Serial.print("valor: ");
-    Serial.print(valores);
-    Serial.print(" Jog: ");
-    Serial.print(jogValue);
-}*/
+
 void shaft_moved(){
   if (millis()-last_run>5){
     if (digitalRead(2)==1){
@@ -92,7 +101,7 @@ void midikey(){
   if (customKey==56){MIDI.sendControlChange(8,127,1);}
   if (customKey==57){MIDI.sendControlChange(9,127,1);}
   if (customKey==48){MIDI.sendControlChange(10,127,1);}
-  if (customKey==65){MIDI.sendControlChange(11,127,1);}
+  if (customKey==65){MIDI.sendControlChange(11,127,1);buttonState = HIGH;}
   }
  /* void midikey(){
   if (customKey==49){MIDI.sendNoteOn(60,127,1);Serial.println("Freeze");}
