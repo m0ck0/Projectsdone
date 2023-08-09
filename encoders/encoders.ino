@@ -44,9 +44,9 @@ void loop(){
   bitWrite(output, 1 , !digitalRead(SHUTTLE3));
   bitWrite(output, 2 , !digitalRead(SHUTTLE2));
   bitWrite(output, 3 , !digitalRead(SHUTTLE1));
-  shuttleCode();
   customKey = customKeypad.getKey();
   if (customKey){midikey();}
+  if (shuttleChange){shuttleCode();}
 }
 /*  if (shuttleChange | jogChange){
     Serial.print("valor: ");
@@ -64,23 +64,23 @@ void shaft_moved(){
     last_run=millis();
   }}}
 
-void shuttleCode() {
-  if (output == 137) {valores = 101;}
-  if (output == 139) {valores = 102;}
-  if (output == 143) {valores = 103;}
-  if (output == 141) {valores = 104;}
-  if (output == 140) {valores = 105;}
-  if (output == 142) {valores = 106;}
-  if (output == 138) {valores = 107;}
-  if (output == 136) {valores = 108;}
-  if (output == 128) {valores = 108;}
-  if (output == 130) {valores = 109;}
-  if (output == 134) {valores = 110;}
-  if (output == 132) {valores = 111;}
-  if (output == 133) {valores = 112;}
-  if (output == 135) {valores = 113;}
-  if (output == 131) {valores = 114;}
-  if (output == 129) {valores = 115;}}
+void shuttleCode(){
+  if (output == 137) {MIDI.sendControlChange(100,0,1); valores = 101;}
+  if (output == 139) {MIDI.sendControlChange(100,9,1); valores = 102;}
+  if (output == 143) {MIDI.sendControlChange(100,18,1); valores = 103;}
+  if (output == 141) {MIDI.sendControlChange(100,27,1); valores = 104;}
+  if (output == 140) {MIDI.sendControlChange(100,36,1); valores = 105;}
+  if (output == 142) {MIDI.sendControlChange(100,45,1); valores = 106;}
+  if (output == 138) {MIDI.sendControlChange(100,54,1); valores = 107;}
+  if (output == 136) {MIDI.sendControlChange(100,63,1); valores = 108;}
+  if (output == 128) {MIDI.sendControlChange(100,63,1); valores = 108;}
+  if (output == 130) {MIDI.sendControlChange(100,72,1); valores = 109;}
+  if (output == 134) {MIDI.sendControlChange(100,81,1); valores = 110;}
+  if (output == 132) {MIDI.sendControlChange(100,90,1); valores = 111;}
+  if (output == 133) {MIDI.sendControlChange(100,99,1); valores = 112;}
+  if (output == 135) {MIDI.sendControlChange(100,108,1); valores = 113;}
+  if (output == 131) {MIDI.sendControlChange(100,117,1); valores = 114;}
+  if (output == 129) {MIDI.sendControlChange(100,127,1); valores = 115;}}
 void midikey(){
   if (customKey==49){MIDI.sendControlChange(1,127,1);}
   if (customKey==50){MIDI.sendControlChange(2,127,1);}
