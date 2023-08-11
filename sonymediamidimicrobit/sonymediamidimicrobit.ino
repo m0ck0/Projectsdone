@@ -5,11 +5,9 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 #define COLS 4
 #define SHUTTLE1  2
 #define SHUTTLE2 13
-#define SHUTTLE3 15
-#define SHUTTLE4 16
-#define ROW 28
+#define SHUTTLE3 14
+#define SHUTTLE4 15
 #define LED 11
-#define COL 10
 #define CLK 0
 #define DT 3
 int counter = 68 ;
@@ -38,12 +36,9 @@ void setup(){
   pinMode(SHUTTLE2, INPUT_PULLUP);
   pinMode(SHUTTLE3, INPUT_PULLUP);
   pinMode(SHUTTLE4, INPUT_PULLUP);
-  pinMode(ROW, OUTPUT);
   pinMode(LED, OUTPUT);
 	pinMode(CLK,INPUT);
 	pinMode(DT,INPUT);
-  pinMode(COL, OUTPUT);
-  digitalWrite(COL, LOW);
 	lastStateCLK = digitalRead(CLK);
   }
 
@@ -61,7 +56,6 @@ void ledToggle(){
     lastButtonState = buttonState;
     if (buttonState == LOW) {
       ledState = (ledState == HIGH) ? LOW: HIGH;
-      digitalWrite(ROW, ledState);
       digitalWrite(LED, ledState);
     }}}
 void jog() {
