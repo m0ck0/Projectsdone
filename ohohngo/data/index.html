@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Robotins Temperatura & Humet estaiyon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+ <div style="background-image: url('http://yoursalsa.uy/data/bg.png');  background-repeat: no-repeat; background-position: center center; background-attachment: fixed;">
+ <p>
+
+	<div class="imgresize"><img src="http://yoursalsa.uy/data/termo.png"></div><span id="RealTemp">%RealTemp%</span>
+    <div class="imgresize2"><img src="http://yoursalsa.uy/data/grados.png"></div>
+</p>
+ <p>
+	<div class="imgresize2"><img src="http://yoursalsa.uy/data/min.png"></div>
+    <span class="sensor-labelssmall" id="MinTemp">%MinT%</span>
+    <div class="imgresize3"><img src="http://yoursalsa.uy/data/grados.png"></div>
+	<div class="imgresize2"><img src="http://yoursalsa.uy/data/max.png"></div>
+    <span class="sensor-labelssmall" id="MaxTemp">%MaxT%</span>
+    <div class="imgresize3"><img src="http://yoursalsa.uy/data/grados.png"></div>
+</p>
+<p>
+    <div class="imgresize"><img src="http://yoursalsa.uy/data/termos.png"></div>
+    <span id="TargetTemp">%TargetTemp%</span>
+    <div class="imgresize2"><img src="http://yoursalsa.uy/data/grados.png"></div>
+</p>
+<p>
+    <a href="/menos"><img src="http://yoursalsa.uy/data/minus.png"></a>
+    <a href="/mas"><img src="http://yoursalsa.uy/data/plus.png"></a>
+</p>
+  <p><div class="imgresize"><img src="http://yoursalsa.uy/data/heat.png"></div><strong> %CalentadorStatus%</strong></p>
+<p>
+</p>
+<p>
+	<div class="imgresize"><img src="http://yoursalsa.uy/data/humi.png"></div><span id="RealHum">%RealHum%</span>
+    <div class="imgresize2"><img src="http://yoursalsa.uy/data/percen.png"></div>
+</p>
+ <p>
+	<div class="imgresize2"><img src="http://yoursalsa.uy/data/min.png"></div>
+	<span class="sensor-labelssmall" id="MinHum">%MinH%</span>
+    <div class="imgresize3"><img src="http://yoursalsa.uy/data/percen.png"></div>
+    <div class="imgresize2"><img src="http://yoursalsa.uy/data/max.png"></div>
+    <span class="sensor-labelssmall" id="MaxHum">%MaxH%</span>
+    <div class="imgresize3"><img src="http://yoursalsa.uy/data/percen.png"></div>
+</p>
+<p>
+	<a href="/on"><img src="http://yoursalsa.uy/data/poweron.png"></a>
+    <a href="/off"><img src="http://yoursalsa.uy/data/poweroff.png"></a>
+</p>
+	<p><div class="imgresize"><img src="http://yoursalsa.uy/data/hume.png"></div><strong> %HumidiStatus%</strong></p><p>
+	<span class="sensor-labels">On</span>
+    <span class="sensor-labels">Wait</span>
+</p>
+<p>
+	<span class="sensor-labelssmall" id="HumidiOn">%HumO%</span>
+    <span class="sensor-labelssmall" id="HumidiWait">%HumW%</span>
+</p>
+<p>
+
+	<a href="/menoshumon"><div class="imgresize2"><img src="http://yoursalsa.uy/data/minus.png"></div></a>	
+    <a href="/mashumon"><div class="imgresize2"><img src="http://yoursalsa.uy/data/plus.png"></div></a>
+    <a href="/menoshumw"><div class="imgresize2"><img src="http://yoursalsa.uy/data/minus.png"></div></a>
+    <a href="/mashumw"><div class="imgresize2"><img src="http://yoursalsa.uy/data/plus.png"></div></a>
+	
+</p>
+<p>
+	<span class="sensor-labels">Air On</span>
+    <span class="sensor-labels">Air Wait</span>
+</p>
+<p>
+	<span class="sensor-labelssmall" id="AirOn">%AirO%</span>
+    <span class="sensor-labelssmall" id="AirWait">%AirW%</span>
+</p>
+<p>
+
+	<a href="/menosairon"><div class="imgresize2"><img src="http://yoursalsa.uy/data/minus.png"></div></a>	
+    <a href="/masairon"><div class="imgresize2"><img src="http://yoursalsa.uy/data/plus.png"></div></a>
+    <a href="/menosairw"><div class="imgresize2"><img src="http://yoursalsa.uy/data/minus.png"></div></a>
+    <a href="/masairw"><div class="imgresize2"><img src="http://yoursalsa.uy/data/plus.png"></div></a>
+	
+</p>
+<p>
+	<a href="/reset">resetear valores</a>
+</p>
+ </body>
+<script>
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("RealTemp").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetRealTemp", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("MinTemp").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetMinTemp", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("MaxTemp").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetMaxTemp", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("TargetTemp").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetTargetTemp", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("RealHum").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetRealHum", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+   setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("MinHum").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetMinHum", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("MaxHum").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetMaxHum", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("HumidiOn").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetHumidiOn", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("HumidiWait").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetHumidiWait", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+  setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("AirOn").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetAirOn", true);
+    xhttp.send();
+  }, 10000 ) ;
+ 
+   setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("AirWait").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetAirWait", true);
+    xhttp.send();
+  }, 10000 ) ;
+  
+     setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("CalentadorStatus").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetCalentador", true);
+    xhttp.send();
+  }, 10000 ) ;
+ 
+     setInterval(function ( ) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("HumidiStatus").innerHTML = this.responseText;
+      }
+    };
+    xhttp.open("GET", "/GetHumidi", true);
+    xhttp.send();
+  }, 10000 ) ;
+
+</script>
+</html>

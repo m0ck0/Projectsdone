@@ -1,0 +1,56 @@
+html {
+  font-family: Tahoma;
+  display: inline-block;
+  margin: 0px auto;
+  text-align: center;
+  background-color: #d8e2dc;
+  }
+
+p {
+  font-size: 1.5rem;
+}
+.button {
+  display: inline-block;
+  background-color: #e0678f;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 14px 14px;
+  text-decoration: none;
+  font-size: 30px;
+  margin: 2px;
+  cursor: pointer;
+}
+.button2 {
+  background-color: #161a1d;
+}
+.button3 {
+  background-color: #7bbfec;
+}
+.units {
+  font-size: 1.2rem;
+ }.unitssmall {
+  font-size: 0.8rem;
+ }
+.sensor-labels {
+  font-size: 1.5rem;
+  vertical-align:middle;
+  padding-bottom: 15px;
+}
+.sensor-labelssmall {
+  font-size: 1rem;
+  vertical-align:middle;
+  padding-bottom: 15px;
+}
+[class^="img"] {
+    display: inline-block;
+ }
+.imgresize img {
+    max-width: 75%;
+}
+.imgresize2 img {
+    max-width: 45%;
+}
+.imgresize3 img {
+    max-width: 30%;
+}
