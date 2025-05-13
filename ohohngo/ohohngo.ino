@@ -4,10 +4,8 @@
 #include <LittleFS.h>
 #include <Wire.h>
 #include <EEPROM.h>
-#include <Grove_Temperature_And_Humidity_Sensor.h>
-#define DHTTYPE DHT22
-#define DHTPIN D2     
-DHT dht(DHTPIN, DHTTYPE);
+#include <OneWire.h>                
+#include <DallasTemperature.h>
 const char* ssid = "Nichoo";
 const char* password = "milanesas";
 
@@ -23,17 +21,20 @@ const byte Calentador = D4;
 const byte Humidi = D5;
 const byte Aire = D6;
 const byte AireOut = D7;
+const byte ONE_WIRE_BUS = D3;
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire); //Se declara una variable u objeto para nuestro sensor
 byte AireW = 0;
 String HumidiStatus = "patata";
 String CalentadorStatus = "nose";
 byte MaxTemp = 0;
 byte MinTemp = 100;
-byte MaxHum = 0;
-byte MinHum = 100;
+//byte MaxHum = 0;
+//byte MinHum = 100;
 byte TargetTemp = 22;
-int RealHum;
-float temp_hum_val[2] = {0};
-float RealTemp;
+//int RealHum;
+//float temp_hum_val[2] = {0};
+float temp;
 
 AsyncWebServer server(80);
 
@@ -44,8 +45,8 @@ String processor(const String& var) {
   else if (var == "CalentadorStatus") {
    return String(CalentadorStatus);
   }
-  else if (var == "RealTemp") {
-    return String(RealTemp);
+  else if (var == "temp") {
+    return String(temp);
   }
   else if (var == "MinT") {
     return String(MinTemp);
@@ -56,15 +57,15 @@ String processor(const String& var) {
   else if (var == "TargetTemp") {
     return String(TargetTemp);
   }
-  else if (var == "RealHum") {
-    return String(RealHum);
-  }
-  else if (var == "MinH") {
-    return String(MinHum);
-  }
-  else if (var == "MaxH") {
-    return String(MaxHum);
-  }
+// else if (var == "RealHum") {
+//    return String(RealHum);
+// }
+// else if (var == "MinH") {
+//   return String(MinHum);
+// }
+// else if (var == "MaxH") {
+//   return String(MaxHum);
+// }
   else if (var == "HumO") {
     return String(HumidiOn);
   }
@@ -85,17 +86,17 @@ void setup() {
   Serial.begin(115200);
   EEPROM.begin(512);
   Wire.begin();
-  dht.begin();
+  sensors.begin();
+//  dht.begin();
   pinMode (Calentador, OUTPUT);
   pinMode (Humidi, OUTPUT);
   pinMode (Aire, OUTPUT);
   pinMode (AireOut, OUTPUT);
-
   TargetTemp = EEPROM.read(1);
   MinTemp = EEPROM.read(2);
   MaxTemp = EEPROM.read(3);
-  MinHum = EEPROM.read(4);
-  MaxHum = EEPROM.read(5);
+//  MinHum = EEPROM.read(4);
+//  MaxHum = EEPROM.read(5);
   HumidiOn = EEPROM.read(6);
   HumidiWait = EEPROM.read(7);
   AirOn = EEPROM.read(8);
@@ -194,20 +195,20 @@ void setup() {
     request->send(LittleFS, "/index.html", String(), false, processor);
   });
  server.on("/reset", HTTP_GET, [](AsyncWebServerRequest * request) {
-        EEPROM.write(2, RealTemp);
-        EEPROM.write(3, RealTemp);
-        EEPROM.write(4, RealHum);
-        EEPROM.write(5, RealHum);
+        EEPROM.write(2, temp);
+        EEPROM.write(3, temp);
+//       EEPROM.write(4, RealHum);
+//       EEPROM.write(5, RealHum);
         EEPROM.commit();
-        MinTemp = RealTemp;
-        MaxTemp = RealTemp;
-        MinHum = RealHum;
-        MaxHum = RealHum;
+        MinTemp = temp;
+        MaxTemp = temp;
+//       MinHum = RealHum;
+//       MaxHum = RealHum;
         Serial.println("Reset");
     request->send(LittleFS, "/index.html", String(), false, processor);
   });
-  server.on("/GetRealTemp", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send_P(200, "text/plain", String(RealTemp).c_str());
+  server.on("/Gettemp", HTTP_GET, [](AsyncWebServerRequest * request) {
+    request->send_P(200, "text/plain", String(temp).c_str());
   });
   server.on("/GetMinTemp", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send_P(200, "text/plain", String(MinTemp).c_str());
@@ -218,15 +219,15 @@ void setup() {
   server.on("/GetTargetTemp", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send_P(200, "text/plain", String(TargetTemp).c_str());
   });
-  server.on("/GetRealHum", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send_P(200, "text/plain", String(RealHum).c_str());
-  });
-  server.on("/GetMinHum", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send_P(200, "text/plain", String(MinHum).c_str());
-  });
-  server.on("/GetMaxHum", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send_P(200, "text/plain", String(MaxHum).c_str());
-  });
+ // server.on("/GetRealHum", HTTP_GET, [](AsyncWebServerRequest * request) {
+ //   request->send_P(200, "text/plain", String(RealHum).c_str());
+ // });
+ // server.on("/GetMinHum", HTTP_GET, [](AsyncWebServerRequest * request) {
+ //   request->send_P(200, "text/plain", String(MinHum).c_str());
+ // });
+ // server.on("/GetMaxHum", HTTP_GET, [](AsyncWebServerRequest * request) {
+ //   request->send_P(200, "text/plain", String(MaxHum).c_str());
+ // });
   server.on("/GetHumidiOn", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send_P(200, "text/plain", String(HumidiOn).c_str());
   });
@@ -242,9 +243,9 @@ void setup() {
   server.on("/GetCalentador", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send_P(200, "text/plain", String(CalentadorStatus).c_str());
   });  
-  server.on("/GetHumidi", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send_P(200, "text/plain", String(HumidiStatus).c_str());
-  });  
+//  server.on("/GetHumidi", HTTP_GET, [](AsyncWebServerRequest * request) {
+//    request->send_P(200, "text/plain", String(HumidiStatus).c_str());
+//  });  
   server.begin();
 }
 
@@ -252,9 +253,9 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
+   previousMillis = currentMillis;
    temphum();
- //   MinMax();
+   MinMax();
   }
   calentador();
   timerhumi();
@@ -262,17 +263,17 @@ void loop() {
 }
 
 void calentador() {
-  if (RealTemp<0 && (digitalRead(Calentador))){
+  if (temp<0 && (digitalRead(Calentador))){
   digitalWrite(Calentador, LOW);
   CalentadorStatus = "Off";
   Serial.println("CalentOff (no data)");
     } 
-  else if (TargetTemp >= RealTemp && (!digitalRead(Calentador)) && RealTemp>0) {
+  else if (TargetTemp >= temp && (!digitalRead(Calentador)) && temp>0) {
     digitalWrite(Calentador, HIGH);
     CalentadorStatus = "On";
     Serial.println("CalentOn");
   }
- else if (TargetTemp < RealTemp && (digitalRead(Calentador)) && RealTemp>0) {
+ else if (TargetTemp < temp && (digitalRead(Calentador)) && temp>0) {
   digitalWrite(Calentador, LOW);
 	CalentadorStatus = "Off";
   Serial.println("CalentOff");
@@ -313,34 +314,36 @@ void timerhumi() {
 }
 
 void temphum() {
-  if (!dht.readTempAndHumidity(temp_hum_val)) {
-    RealHum = temp_hum_val[0];
-    RealTemp = temp_hum_val[1];
-//  Serial.print(RealTemp);
+sensors.requestTemperatures();   //Se envía el comando para leer la temperatura
+float temp = sensors.getTempCByIndex(0); //Se obtiene la temperatura en ºC
+//  if (!dht.readTempAndHumidity(temp_hum_val)) {
+//  RealTemp = temp_hum_val[1];
+//  RealHum = temp_hum_val[0];
+//	Serial.print(temp);
 //  Serial.print("   ");
 //  Serial.println(RealHum);
   }
 }
 
 void MinMax() {
-  if ((RealTemp < MinTemp) && (RealTemp>=1)) {
-    MinTemp = RealTemp;
+  if ((temp < MinTemp) && (temp>=1)) {
+    MinTemp = temp;
     EEPROM.write(2, MinTemp);
     EEPROM.commit();
   }
-  else if ((RealTemp > MaxTemp) && (RealTemp<=100)) {
-    MaxTemp = RealTemp;
+  else if ((temp > MaxTemp) && (temp<=100)) {
+    MaxTemp = temp;
     EEPROM.write(3, MaxTemp);
     EEPROM.commit();
   }
-  else if (RealHum < MinHum && RealHum > 0) {
-    MinHum = RealHum;
-    EEPROM.write(4, MinHum);
-    EEPROM.commit();
-  }
-  else if (RealHum > MaxHum && RealHum < 100) {
-    MaxHum = RealHum;
-    EEPROM.write(5, MaxHum);
-    EEPROM.commit();
-  }
+ // else if (RealHum < MinHum && RealHum > 0) {
+ //   MinHum = RealHum;
+ //   EEPROM.write(4, MinHum);
+ //   EEPROM.commit();
+ // }
+ // else if (RealHum > MaxHum && RealHum < 100) {
+ //   MaxHum = RealHum;
+ //   EEPROM.write(5, MaxHum);
+ //   EEPROM.commit();
+ // }
 }
