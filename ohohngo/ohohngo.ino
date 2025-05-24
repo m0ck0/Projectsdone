@@ -17,13 +17,13 @@ byte AirWait = 1;
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
 const long interval = 6000;
+const byte Termometro = D3;
 const byte Calentador = D4;
 const byte Humidi = D5;
 const byte Aire = D6;
 const byte AireOut = D7;
-const byte ONE_WIRE_BUS = D3;
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire); //Se declara una variable u objeto para nuestro sensor
+OneWire oneWire(Termometro);
+DallasTemperature sensors(&oneWire);
 byte AireW = 0;
 String HumidiStatus = "patata";
 String CalentadorStatus = "nose";
@@ -314,12 +314,12 @@ void timerhumi() {
 }
 
 void temphum() {
-sensors.requestTemperatures();   //Se envía el comando para leer la temperatura
-float temp = sensors.getTempCByIndex(0); //Se obtiene la temperatura en ºC
+sensors.requestTemperatures(); 
+float temp = sensors.getTempCByIndex(0);
 //  if (!dht.readTempAndHumidity(temp_hum_val)) {
 //  RealTemp = temp_hum_val[1];
 //  RealHum = temp_hum_val[0];
-//	Serial.print(temp);
+	Serial.print(temp);
 //  Serial.print("   ");
 //  Serial.println(RealHum);
   }

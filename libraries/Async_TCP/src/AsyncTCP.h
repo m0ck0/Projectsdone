@@ -7,10 +7,15 @@
 #include "AsyncTCPVersion.h"
 #define ASYNCTCP_FORK_ESP32Async
 
+#include <esp_idf_version.h>
+
+#ifdef ARDUINO
 #include "IPAddress.h"
-#if ESP_IDF_VERSION_MAJOR < 5
+#if __has_include(<IPv6Address.h>)
 #include "IPv6Address.h"
 #endif
+#endif
+
 #include "lwip/ip6_addr.h"
 #include "lwip/ip_addr.h"
 #include <functional>
@@ -69,23 +74,32 @@ typedef std::function<void(void *, AsyncClient *, uint32_t time)> AcTimeoutHandl
 
 struct tcp_pcb;
 struct ip_addr;
+class AsyncTCP_detail;
 
 class AsyncClient {
 public:
   AsyncClient(tcp_pcb *pcb = 0);
   ~AsyncClient();
 
-  AsyncClient &operator=(const AsyncClient &other);
-  AsyncClient &operator+=(const AsyncClient &other);
+  // Noncopyable
+  AsyncClient(const AsyncClient &) = delete;
+  AsyncClient &operator=(const AsyncClient &) = delete;
 
-  bool operator==(const AsyncClient &other);
+  // Nonmovable
+  AsyncClient(AsyncClient &&) = delete;
+  AsyncClient &operator=(AsyncClient &&) = delete;
 
-  bool operator!=(const AsyncClient &other) {
+  bool operator==(const AsyncClient &other) const;
+
+  bool operator!=(const AsyncClient &other) const {
     return !(*this == other);
   }
+  bool connect(ip_addr_t addr, uint16_t port);
+#ifdef ARDUINO
   bool connect(const IPAddress &ip, uint16_t port);
-#if ESP_IDF_VERSION_MAJOR < 5
+#if __has_include(<IPv6Address.h>)
   bool connect(const IPv6Address &ip, uint16_t port);
+#endif
 #endif
   bool connect(const char *host, uint16_t port);
   /**
@@ -102,9 +116,9 @@ public:
   bool free();
 
   // ack is not pending
-  bool canSend();
+  bool canSend() const;
   // TCP buffer space available
-  size_t space();
+  size_t space() const;
 
   /**
      * @brief add data to be send (but do not send yet)
@@ -154,51 +168,63 @@ public:
     return data == NULL ? 0 : write(data, strlen(data));
   };
 
-  uint8_t state();
-  bool connecting();
-  bool connected();
-  bool disconnecting();
-  bool disconnected();
+  uint8_t state() const;
+  bool connecting() const;
+  bool connected() const;
+  bool disconnecting() const;
+  bool disconnected() const;
 
   // disconnected or disconnecting
-  bool freeable();
+  bool freeable() const;
 
-  uint16_t getMss();
+  uint16_t getMss() const;
 
-  uint32_t getRxTimeout();
+  uint32_t getRxTimeout() const;
   // no RX data timeout for the connection in seconds
   void setRxTimeout(uint32_t timeout);
 
-  uint32_t getAckTimeout();
+  uint32_t getAckTimeout() const;
   // no ACK timeout for the last sent packet in milliseconds
   void setAckTimeout(uint32_t timeout);
 
-  void setNoDelay(bool nodelay);
+  void setNoDelay(bool nodelay) const;
   bool getNoDelay();
 
   void setKeepAlive(uint32_t ms, uint8_t cnt);
 
-  uint32_t getRemoteAddress();
-  uint16_t getRemotePort();
-  uint32_t getLocalAddress();
-  uint16_t getLocalPort();
+  uint32_t getRemoteAddress() const;
+  uint16_t getRemotePort() const;
+  uint16_t remotePort() const {
+    return getRemotePort();
+  }
+
+  uint32_t getLocalAddress() const;
+  uint16_t getLocalPort() const;
+  uint16_t localPort() const {
+    return getLocalPort();
+  }
+
+  ip4_addr_t getRemoteAddress4() const;
+  ip4_addr_t getLocalAddress4() const;
+
 #if LWIP_IPV6
-  ip6_addr_t getRemoteAddress6();
-  ip6_addr_t getLocalAddress6();
-#if ESP_IDF_VERSION_MAJOR < 5
-  IPv6Address remoteIP6();
-  IPv6Address localIP6();
+  ip6_addr_t getRemoteAddress6() const;
+  ip6_addr_t getLocalAddress6() const;
+#ifdef ARDUINO
+#if __has_include(<IPv6Address.h>)
+  IPv6Address remoteIP6() const;
+  IPv6Address localIP6() const;
 #else
-  IPAddress remoteIP6();
-  IPAddress localIP6();
+  IPAddress remoteIP6() const;
+  IPAddress localIP6() const;
+#endif
 #endif
 #endif
 
-  // compatibility
-  IPAddress remoteIP();
-  uint16_t remotePort();
-  IPAddress localIP();
-  uint16_t localPort();
+#ifdef ARDUINO
+  IPAddress remoteIP() const;
+  IPAddress localIP() const;
+#endif
 
   // set callback - on successful connect
   void onConnect(AcConnectHandler cb, void *arg = 0);
@@ -228,18 +254,7 @@ public:
   }
 
   static const char *errorToString(int8_t error);
-  const char *stateToString();
-
-  // internal callbacks - Do NOT call any of the functions below in user code!
-  static int8_t _s_poll(void *arg, struct tcp_pcb *tpcb);
-  static int8_t _s_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *pb, int8_t err);
-  static int8_t _s_fin(void *arg, struct tcp_pcb *tpcb, int8_t err);
-  static int8_t _s_lwip_fin(void *arg, struct tcp_pcb *tpcb, int8_t err);
-  static void _s_error(void *arg, int8_t err);
-  static int8_t _s_sent(void *arg, struct tcp_pcb *tpcb, uint16_t len);
-  static int8_t _s_connected(void *arg, struct tcp_pcb *tpcb, int8_t err);
-  static void _s_dns_found(const char *name, struct ip_addr *ipaddr, void *arg);
-  static void _tcp_error(void *arg, int8_t err);
+  const char *stateToString() const;
 
   int8_t _recv(tcp_pcb *pcb, pbuf *pb, int8_t err);
   tcp_pcb *pcb() {
@@ -247,9 +262,8 @@ public:
   }
 
 protected:
+  friend class AsyncTCP_detail;
   friend class AsyncServer;
-
-  bool _connect(ip_addr_t addr, uint16_t port);
 
   tcp_pcb *_pcb;
   int8_t _closed_slot;
@@ -290,17 +304,16 @@ protected:
   int8_t _fin(tcp_pcb *pcb, int8_t err);
   int8_t _lwip_fin(tcp_pcb *pcb, int8_t err);
   void _dns_found(struct ip_addr *ipaddr);
-
-public:
-  AsyncClient *prev;
-  AsyncClient *next;
 };
 
 class AsyncServer {
 public:
+  AsyncServer(ip_addr_t addr, uint16_t port);
+#ifdef ARDUINO
   AsyncServer(IPAddress addr, uint16_t port);
-#if ESP_IDF_VERSION_MAJOR < 5
+#if __has_include(<IPv6Address.h>)
   AsyncServer(IPv6Address addr, uint16_t port);
+#endif
 #endif
   AsyncServer(uint16_t port);
   ~AsyncServer();
@@ -308,21 +321,14 @@ public:
   void begin();
   void end();
   void setNoDelay(bool nodelay);
-  bool getNoDelay();
-  uint8_t status();
-
-  // Do not use any of the functions below!
-  static int8_t _s_accept(void *arg, tcp_pcb *newpcb, int8_t err);
-  static int8_t _s_accepted(void *arg, AsyncClient *client);
+  bool getNoDelay() const;
+  uint8_t status() const;
 
 protected:
+  friend class AsyncTCP_detail;
+
   uint16_t _port;
-  bool _bind4 = false;
-  bool _bind6 = false;
-  IPAddress _addr;
-#if ESP_IDF_VERSION_MAJOR < 5
-  IPv6Address _addr6;
-#endif
+  ip_addr_t _addr;
   bool _noDelay;
   tcp_pcb *_pcb;
   AcConnectHandler _connect_cb;
