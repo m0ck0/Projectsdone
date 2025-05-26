@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Robotins Temperatura & Humet estaiyon</title>
+  <title>Robotins Temperatura & Humetat estaiyon</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:,">
   <link rel="stylesheet" type="text/css" href="style.css">
@@ -10,9 +10,10 @@
  <div style="background-image: url('http://yoursalsa.uy/data/bg.png');  background-repeat: no-repeat; background-position: center center; background-attachment: fixed;">
  <p>
 
-	<div class="imgresize"><img src="http://yoursalsa.uy/data/termo.png"></div><span id="RealTemp">%RealTemp%</span>
+	<div class="imgresize"><img src="http://yoursalsa.uy/data/termo.png"></div><span id="RealTemp">%RealT%</span>
     <div class="imgresize2"><img src="http://yoursalsa.uy/data/grados.png"></div>
 </p>
+ 
  <p>
 	<div class="imgresize2"><img src="http://yoursalsa.uy/data/min.png"></div>
     <span class="sensor-labelssmall" id="MinTemp">%MinT%</span>
@@ -33,6 +34,7 @@
   <p><div class="imgresize"><img src="http://yoursalsa.uy/data/heat.png"></div><strong> %CalentadorStatus%</strong></p>
 <p>
 </p>
+<!--
 <p>
 	<div class="imgresize"><img src="http://yoursalsa.uy/data/humi.png"></div><span id="RealHum">%RealHum%</span>
     <div class="imgresize2"><img src="http://yoursalsa.uy/data/percen.png"></div>
@@ -45,6 +47,7 @@
     <span class="sensor-labelssmall" id="MaxHum">%MaxH%</span>
     <div class="imgresize3"><img src="http://yoursalsa.uy/data/percen.png"></div>
 </p>
+-->
 <p>
 	<a href="/on"><img src="http://yoursalsa.uy/data/poweron.png"></a>
     <a href="/off"><img src="http://yoursalsa.uy/data/poweroff.png"></a>
@@ -127,39 +130,6 @@
       }
     };
     xhttp.open("GET", "/GetTargetTemp", true);
-    xhttp.send();
-  }, 10000 ) ;
-
-  setInterval(function ( ) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        document.getElementById("RealHum").innerHTML = this.responseText;
-      }
-    };
-    xhttp.open("GET", "/GetRealHum", true);
-    xhttp.send();
-  }, 10000 ) ;
-
-   setInterval(function ( ) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        document.getElementById("MinHum").innerHTML = this.responseText;
-      }
-    };
-    xhttp.open("GET", "/GetMinHum", true);
-    xhttp.send();
-  }, 10000 ) ;
-
-  setInterval(function ( ) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        document.getElementById("MaxHum").innerHTML = this.responseText;
-      }
-    };
-    xhttp.open("GET", "/GetMaxHum", true);
     xhttp.send();
   }, 10000 ) ;
 

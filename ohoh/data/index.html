@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robotins Temperatura & Humedad Estación</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+ <div style="background-image: url('http://yoursalsa.uy/data/bg.png');  background-repeat: no-repeat; background-position: center center; background-attachment: fixed;">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="section">
+      <img src="http://yoursalsa.uy/data/termo.png" class="icon">
+      <strong id="RealTemp">--</strong>
+      <img src="http://yoursalsa.uy/data/grados.png" class="small-icon">
+    </div>
+
+    <div class="section">
+      <img src="http://yoursalsa.uy/data/min.png" class="small-icon">
+      <strong id="MinTemp">--</strong>
+      <img src="http://yoursalsa.uy/data/grados.png" class="small-icon">
+      <img src="http://yoursalsa.uy/data/max.png" class="small-icon">
+      <strong id="MaxTemp">--</strong>
+      <img src="http://yoursalsa.uy/data/grados.png" class="small-icon">
+    </div>
+
+    <div class="section">
+      <img src="http://yoursalsa.uy/data/termos.png" class="icon">
+      <strong id="TargetTemp">--</strong>
+      <img src="http://yoursalsa.uy/data/grados.png" class="small-icon">
+    </div>
+
+    <div class="controls">
+<img src="http://yoursalsa.uy/data/minus.png"  onclick="TargetTempD()"><img src="http://yoursalsa.uy/data/plus.png"  onclick="TargetTempA()">
+    </div>
+
+    <div class="status">
+      <img src="http://yoursalsa.uy/data/heat.png" class="icon">
+      <strong id="CalentadorStatus">--</strong>
+    </div>
+
+    <div class="status">
+      <img src="http://yoursalsa.uy/data/hume.png" class="icon">
+      <strong id="HumidiStatus">--</strong>
+    </div>
+
+<img src="http://yoursalsa.uy/data/poweron.png"  onclick="NubeOn()"><img src="http://yoursalsa.uy/data/poweroff.png"  onclick="NubeStop()">
+
+	
+	<p>Humedal: <strong id="HumidiOn">--</strong><div class="button"><img src="http://yoursalsa.uy/data/minus.png"  onclick="HumidiOnD()"><img src="http://yoursalsa.uy/data/plus.png"  onclick="HumidiOnA()"></div></p>
+	<p>Esperanda: <strong id="HumidiWait">--</strong><div class="button"><img src="http://yoursalsa.uy/data/minus.png"  onclick="HumidiWaitD()"><img src="http://yoursalsa.uy/data/plus.png"  onclick="HumidiWaitA()"></div></p>
+	<p>Aireande: <strong id="AirOn">--</strong><div class="button"><img src="http://yoursalsa.uy/data/minus.png"  onclick="AirOnD()"><img src="http://yoursalsa.uy/data/plus.png"  onclick="AirOnA()"></div></p>
+	<p>Esperandu: <strong id="AirWait">--</strong><div class="button"><img src="http://yoursalsa.uy/data/minus.png" onclick="AirWaitD()"><img src="http://yoursalsa.uy/data/plus.png"  onclick="AirWaitA()"></div></p>
+
+    <a href="/reset" class="reset-button">Resetear valores</a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

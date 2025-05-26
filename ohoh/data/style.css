@@ -1,0 +1,41 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f4f4f4;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+  padding: 20px;
+}
+
+.section, .status, .controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.icon {
+  width: 50px;
+}
+
+.small-icon {
+  width: 30px;
+}
+
+.reset-button {
+  display: block;
+  width: 150px;
+  margin: 20px auto;
+  padding: 10px;
+  background: #ff4500;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+}
+.button,
+.controls a img {
+  transform: scale(0.5);
+}

@@ -1,0 +1,12 @@
+{
+  "RealTemp": "24°C",
+  "MinTemp": "20°C",
+  "MaxTemp": "28°C",
+  "TargetTemp": "22°C",
+  "CalentadorStatus": "Encendido",
+  "HumidiStatus": "Apagado",
+  "HumidiOn": "1",
+  "HumidiWait": "1",
+  "AirOn": "1",
+  "AirWait": "1"
+	}
