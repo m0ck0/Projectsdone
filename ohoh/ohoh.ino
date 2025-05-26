@@ -5,7 +5,7 @@
 #include <EEPROM.h>
 #include <OneWire.h>                
 #include <DallasTemperature.h>
-const char* ssid = "Nichoo";
+const char* ssid = "Nichonet";
 const char* password = "milanesas";
 
 const unsigned long Minutos = 60 * 1000UL;
@@ -16,11 +16,11 @@ byte AirWait = 1;
 unsigned long previousMillis = 0;
 unsigned long prevMillis = 0;
 const long interval = 6000;
-const byte Termometro = D5;
-const byte Calentador = D6;
-const byte Humidi = D8;
-const byte Aire = D4;
-const byte AireOut = D7;
+const byte Termometro = D4;
+const byte Calentador = D5;
+const byte Humidi = D6;
+const byte Aire = D7;
+const byte AireOut = D8;
 OneWire oneWire(Termometro);
 DallasTemperature sensors(&oneWire);
 byte AireW = 0;
@@ -38,8 +38,6 @@ void handleRoot() {
     if (file) {
         server.streamFile(file, "text/html");
         file.close();
-    } else {
-        server.send(500, "text/plain", "Error al cargar index.html");
     }
 }
 
@@ -48,8 +46,6 @@ void handleCSS() {
     if (file) {
         server.streamFile(file, "text/css");
         file.close();
-    } else {
-        server.send(500, "text/plain", "Error al cargar CSS");
     }
 }
 void handleIcon() {
@@ -65,8 +61,6 @@ void handleJS() {
     if (file) {
         server.streamFile(file, "application/javascript");
         file.close();
-    } else {
-        server.send(500, "text/plain", "Error al cargar script.js");
     }
 }
 
@@ -76,8 +70,6 @@ void handleJson() {
    String jsonData = file.readString();
     server.send(200, "application/json", jsonData);
     file.close();
-  } else {
-        server.send(500, "text/plain", "Error al cargar al yeison");
     }
 }
 
@@ -128,9 +120,7 @@ void setup() {
   if (!LittleFS.begin()) {
     Serial.println("Error al montar LittleFS");
     return;
-  }
-  Serial.println("LittleFS montado correctamente");
-  
+  }  
     server.on("/", handleRoot);
     server.on("/style.css", handleCSS);
     server.on("/script.js", handleJS);
@@ -222,6 +212,17 @@ server.on("/AirWait+", []() {
     server.send(204);  
     });
 
+server.on("/ReSet", []() {
+    EEPROM.write(1, 6);
+    EEPROM.write(2, 6);
+    EEPROM.write(3, 6);
+    EEPROM.write(6, 6);
+    EEPROM.write(7, 6);
+    EEPROM.write(8, 6);
+    EEPROM.write(9, 6);
+    EEPROM.commit();
+    server.send(204);  
+    });
 
   server.begin();
   }

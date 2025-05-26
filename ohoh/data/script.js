@@ -14,7 +14,7 @@ async function fetchData() {
     document.getElementById("AirOn").innerText = data.AirOn || "--";
     document.getElementById("AirWait").innerText = data.AirWait || "--";
   } catch (error) {
-    console.error("❌ Error obteniendo datos:", error);
+    console.error("Error:", error);
   }
 }
 setInterval(fetchData, 10000);
@@ -25,12 +25,12 @@ function NubeOn() {
   fetch('/NubeOn', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 function NubeStop() {
   fetch('/NubeStop', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 
 
 
@@ -38,57 +38,63 @@ function TargetTempA() {
   fetch('/TargetTemp+', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 function TargetTempD() {
   fetch('/TargetTemp-', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+       fetchData();}})}
 
 
 function HumidiOnA() {
   fetch('/HumidiOn+', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 function HumidiOnD() {
   fetch('/HumidiOn-', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 
 
 function HumidiWaitA() {
   fetch('/HumidiWait+', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 function HumidiWaitD() {
   fetch('/HumidiWait-', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 
 
 function AirOnA() {
   fetch('/AirOn+', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 function AirOnD() {
   fetch('/AirOn-', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 
 
 function AirWaitA() {
   fetch('/AirWait+', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
 function AirWaitD() {
   fetch('/AirWait-', { method: 'GET' })
     .then(response => {
       if (response.ok) {
-        location.reload();}})}
+        fetchData();}})}
+		
+		function ReSet() {
+  fetch('/ReSet', { method: 'GET' })
+    .then(response => {
+      if (response.ok) {
+        fetchData();}})}

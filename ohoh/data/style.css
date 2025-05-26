@@ -25,17 +25,7 @@ body {
   width: 30px;
 }
 
-.reset-button {
-  display: block;
-  width: 150px;
-  margin: 20px auto;
-  padding: 10px;
-  background: #ff4500;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 5px;
-}
 .button,
 .controls a img {
-  transform: scale(0.5);
+  transform: scale(0.3);
 }
